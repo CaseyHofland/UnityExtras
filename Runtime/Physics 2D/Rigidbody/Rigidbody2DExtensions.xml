@@ -1,0 +1,14 @@
+<docs>
+    <AddExplosionForce>
+        <summary>Applies a force to a rigidbody that simulates explosion effects.</summary>
+        <param name="rigidbody2D">The rigidbody to apply the force to.</param>
+        <param name="explosionForce">The force of the explosion (which may be modified by distance).</param>
+        <param name="explosionPosition">The center of the circle within which the explosion has its effect.</param>
+        <param name="explosionRadius">The radius of the circle within which the explosion has its effect.</param>
+        <param name="upwardsModifier">Adjustment to the aparent position of the explosion to make it seem to lift objects.</param>
+        <param name="mode">The method used to apply the force to its targets.</param>
+    </AddExplosionForce>
+    <ClosestPointOnBounds>
+        <summary>The closest point to the bounding box of the attached colliders.</summary>
+    </ClosestPointOnBounds>
+</docs>

@@ -1,0 +1,29 @@
+{
+    "name": "CaseyDeCoder.UnityExtras.Physics.Editor",
+    "rootNamespace": "UnityExtras.Editor",
+    "references": [
+        "GUID:c4879cbc2f71c10408bbd8bb857bc1f7",
+        "GUID:282ac69ac28230b48b9be2db8cff7e7a",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:329b4ccd385744985bf3f83cfd77dfe7"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "PHYSICS_MODULE"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.physics",
+            "expression": "1",
+            "define": "PHYSICS_MODULE"
+        }
+    ],
+    "noEngineReferences": false
+}

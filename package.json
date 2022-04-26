@@ -1,0 +1,26 @@
+{
+  "name": "com.caseydecoder.unityextras",
+  "version": "0.1.0-exp",
+  "displayName": "Unity Extras",
+  "description": "A package containing extras for the Unity Game Engine. Full of reusable code to create common game mechanics with.",
+  "unity": "2021.1",
+  "keywords": [
+    "unity",
+    "extra",
+    "physics",
+    "2d",
+    "3d",
+    "character",
+    "controller"
+  ],
+  "author": {
+    "name": "CaseyDeCoder",
+    "email": "hofland.casey@gmail.com",
+    "url": "https://casey-says-hello.surge.sh/"
+  },
+  "hideInEditor": false,
+  "type": "library",
+  "dependencies": {
+    "com.unity.mathematics": "1.2.6"
+  }
+}

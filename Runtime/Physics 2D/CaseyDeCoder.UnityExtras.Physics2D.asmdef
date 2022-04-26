@@ -1,0 +1,24 @@
+{
+    "name": "CaseyDeCoder.UnityExtras.Physics2D",
+    "rootNamespace": "UnityExtras",
+    "references": [
+        "GUID:806b0a144ac65a74899d99f880ae9914"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "PHYSICS2D_MODULE"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.physics2d",
+            "expression": "1",
+            "define": "PHYSICS2D_MODULE"
+        }
+    ],
+    "noEngineReferences": false
+}
