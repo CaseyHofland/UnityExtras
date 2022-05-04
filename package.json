@@ -21,6 +21,7 @@
   "hideInEditor": false,
   "type": "library",
   "dependencies": {
-    "com.unity.mathematics": "1.2.6"
+    "com.unity.mathematics": "1.2.6",
+    "com.unity.inputsystem": "1.3.0"
   }
 }
