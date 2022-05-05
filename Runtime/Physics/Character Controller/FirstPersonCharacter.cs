@@ -1,5 +1,6 @@
-#nullable enable
+﻿#nullable enable
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace UnityExtras
 {
@@ -13,26 +14,66 @@ namespace UnityExtras
 
         public static implicit operator CharacterMover(FirstPersonCharacter firstPersonCharacter) => firstPersonCharacter.characterMover;
 
-        private const float lookThreshold = 0.1f;
+        [field: Header("Look")]
+        [field: SerializeField] public Transform? lookTransform { get; set; }
+        [field: SerializeField] [field: Tooltip("How far in degrees can you move the camera up")] [field: Min(0f)] public float topClamp { get; set; } = 89.9f;
+        [field: SerializeField] [field: Tooltip("How far in degrees can you move the camera down")] [field: Min(0f)] public float bottomClamp { get; set; } = 89.9f;
 
-        [field: Header("Looking")]
-        [field: SerializeField] public Transform? lookTransformOverride { get; set; }
-        [field: SerializeField][field: Tooltip("How far in degrees can you move the camera up")] [field: Min(0f)] public float topClamp { get; set; } = 90.0f;
-        [field: SerializeField] [field: Tooltip("How far in degrees can you move the camera down")][field: Min(0f)] public float bottomClamp { get; set; } = 90.0f;
+        [field: Header("Input")]
+        [field: SerializeField] public InputActionProperty moveAction { get; set; }
+        [field: SerializeField] public InputActionProperty lookAction { get; set; }
+        [field: SerializeField] public InputActionProperty sprintAction { get; set; }
+        [field: SerializeField] public InputActionProperty jumpAction { get; set; }
 
         private float _lookPitch;
+
+        private void Awake()
+        {
+            // BAD CODE!!!
+            moveAction.action.Enable();
+            lookAction.action.Enable();
+            sprintAction.action.Enable();
+            jumpAction.action.Enable();
+        }
+
+        private void OnEnable()
+        {
+            moveAction.action.performed += MovePerformed;
+            lookAction.action.performed += LookPerformed;
+            jumpAction.action.performed += JumpPerformed;
+        }
+
+        private void OnDisable()
+        {
+            moveAction.action.performed -= MovePerformed;
+            lookAction.action.performed -= LookPerformed;
+            jumpAction.action.performed -= JumpPerformed;
+        }
+
+        private void MovePerformed(InputAction.CallbackContext context)
+        {
+            var direction2D = context.ReadValue<Vector2>();
+            var direction = new Vector3(direction2D.x, 0f, direction2D.y);
+            characterMover.Move(direction, sprintAction.action.phase.IsInProgress());
+        }
+
+        private void LookPerformed(InputAction.CallbackContext context)
+        {
+            Look(context.ReadValue<Vector2>());
+        }
+
+        private void JumpPerformed(InputAction.CallbackContext context)
+        {
+            characterMover.Jump();
+        }
 
         public void Look(Vector2 movement)
         {
             var turnFactor = movement.x;
-            if (turnFactor >= lookThreshold || turnFactor <= -lookThreshold)
-            {
-                characterMover.Turn(turnFactor);
-            }
+            characterMover.Turn(turnFactor);
 
             var lookFactor = movement.y;
-            var lookTransform = lookTransformOverride ? lookTransformOverride! : Camera.main.transform;
-            if (lookFactor >= lookThreshold || lookFactor <= -lookThreshold && lookTransform != null)
+            if (lookTransform != null)
             {
                 _lookPitch += lookFactor * characterMover.rotationSpeed * Time.deltaTime;
                 _lookPitch = Mathf.Clamp(_lookPitch, -bottomClamp, topClamp);
