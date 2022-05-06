@@ -1,4 +1,4 @@
-#nullable enable
+﻿#nullable enable
 using UnityEngine;
 using Unity.Mathematics;
 
@@ -15,6 +15,7 @@ namespace UnityExtras
         public static Vector2 DegreeToVector2(float degree) => RadianToVector2(degree * Mathf.Deg2Rad);
 
         public static Vector3 JumpVelocity(float desiredHeight) => JumpVelocity(desiredHeight, Physics.gravity);
-        public static Vector3 JumpVelocity(float desiredHeight, Vector3 gravity) => -gravity.normalized * Mathf.Sqrt(desiredHeight * 2f * gravity.magnitude);
+        public static Vector3 JumpVelocity(float desiredHeight, Vector3 gravity) => JumpVelocity(desiredHeight, gravity.normalized, gravity.magnitude);
+        public static Vector3 JumpVelocity(float desiredHeight, Vector3 gravityDirection, float gravityMagnitude) => -gravityDirection * Mathf.Sqrt(desiredHeight * 2f * gravityMagnitude);
     }
 }

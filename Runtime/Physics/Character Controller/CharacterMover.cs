@@ -23,7 +23,7 @@ namespace UnityExtras
         [field: Header("Move")]
         [field: SerializeField] [field: Tooltip("Move speed of the character in m/s")][field: Min(0f)] public float moveSpeed { get; set; } = 2.0f;
         [field: SerializeField] [field: Tooltip("Sprint boost of the character in m/s")][field: Min(0f)] public float sprintBoost { get; set; } = 3.335f;
-        [field: SerializeField] [field: Tooltip("Rotation speed of the character")][field: Min(0f)] public float rotationSpeed { get; set; } = 1.0f;
+        [field: SerializeField] [field: Tooltip("Rotation speed of the character in d/s")][field: Min(0f)] public float rotationSpeed { get; set; } = 360f;
         [field: SerializeField] [field: Tooltip("Acceleration and deceleration")][field: Min(0.1f)] public float speedChangeRate { get; set; } = 10.0f;
 
         [field: Header("Jump")]
@@ -44,22 +44,63 @@ namespace UnityExtras
         public const float terminalVelocity = 53.0f;
 
         private float _jumpGravityScale => peakTime > 0f
-            ? ((2f * jumpHeight) / (peakTime * peakTime)) / Physics.gravity.magnitude
+            ? (2f * jumpHeight) / (peakTime * peakTime) / _gravityForce
             : gravityScale;
         private Vector3 _jumpGravity => _jumpGravityScale * Physics.gravity;
 
         private bool _fastFalling => _currentFastFallBuffer < 0f;
 
-        private float _currentGravityScale => characterController.isGrounded || _smoothGravity.normalized == Physics.gravity.normalized
+        private float _currentGravityScale => characterController.isGrounded || _smoothGravity.normalized == _gravityDirection
             ? gravityScale
             : _jumpGravityScale * (_fastFalling ? fastFallRatio : 1f);
         private Vector3 _gravity => _currentGravityScale * Physics.gravity;
 
-        private void Start()
+        #region Dirty
+        private Vector3 _lastGravity;
+        private bool _gravityDirty
         {
-            Debug.LogWarning("Character Mover needs to be optimized!");
-            Debug.LogWarning("Character Mover rotation speed should be much higher! Work in tandem with InputSystem to get the right values.");
+            get => !_lastGravity.Equals(Physics.gravity);
+            set
+            {
+                if (value)
+                {
+                    return;
+                }
+
+                _lastGravity = Physics.gravity;
+            }
         }
+
+        private float _gravityForce;
+        private Vector3 _gravityDirection;
+        private Vector3 _moveVelocityScale;
+
+        private void PrepareGravity()
+        {
+            _gravityForce = Physics.gravity.magnitude;
+            _gravityDirection = Physics.gravity.normalized;
+
+            _moveVelocityScale = new Vector3
+            (
+                1f - Abs(_gravityDirection.x),
+                1f - Abs(_gravityDirection.y),
+                1f - Abs(_gravityDirection.z)
+            );
+
+            _gravityDirty = false;
+        }
+
+        private bool TryPrepareGravity()
+        {
+            if (_gravityDirty)
+            {
+                PrepareGravity();
+                return true;
+            }
+
+            return false;
+        }
+        #endregion
 
         private void OnValidate()
         {
@@ -72,6 +113,8 @@ namespace UnityExtras
         #region Update
         private void OnEnable()
         {
+            TryPrepareGravity();
+
             motion = Vector3.zero;
             targetMotion = Vector3.zero;
             _smoothGravity = _gravity * Time.deltaTime;
@@ -85,6 +128,8 @@ namespace UnityExtras
         // WARNING: Order dependent!
         private void Update()
         {
+            TryPrepareGravity();
+
             CalculateMotion();
             characterController.Move((motion + _smoothGravity) * Time.deltaTime);
             targetMotion = Vector3.zero;
@@ -98,11 +143,7 @@ namespace UnityExtras
             var targetSpeed = targetMotion.magnitude;
 
             // Accelerate or decelerate to target speed.
-            var moveVelocityScale = Physics.gravity.normalized;
-            moveVelocityScale.x = 1f - Abs(moveVelocityScale.x);
-            moveVelocityScale.y = 1f - Abs(moveVelocityScale.y);
-            moveVelocityScale.z = 1f - Abs(moveVelocityScale.z);
-            var currentSpeed = Vector3.Scale(characterController.velocity, moveVelocityScale).magnitude;
+            var currentSpeed = Vector3.Scale(characterController.velocity, _moveVelocityScale).magnitude;
             if (currentSpeed < targetSpeed - speedOffset
                 || currentSpeed > targetSpeed + speedOffset)
             {
@@ -116,17 +157,16 @@ namespace UnityExtras
 
         private void CalculateGravity()
         {
-            var gravityDelta = _gravity * Time.deltaTime;
             if (characterController.isGrounded)
             {
-                _smoothGravity = gravityDelta;
+                _smoothGravity = _gravity * Time.deltaTime;
                 return;
             }
 
             // Apply gravity over time if under terminal velocity (multiply by delta time twice to linearly speed up over time).
-            var gravityDeltaSpeed = gravityDelta.magnitude;
+            var gravityDeltaSpeed = _gravityForce * Time.deltaTime;
             var factor = Clamp(terminalVelocity - _smoothGravity.magnitude, -gravityDeltaSpeed, gravityDeltaSpeed);
-            _smoothGravity += gravityDelta.normalized * factor;
+            _smoothGravity += _gravityDirection * factor;
         }
 
         private void UpdateJumpSettings()
@@ -161,12 +201,14 @@ namespace UnityExtras
 
         public void Jump()
         {
+            TryPrepareGravity();
+
             // Jump or activate the jump buffer.
             if (characterController.isGrounded || _currentCoyoteTime > 0f)
             {
                 if (_fastFalling)
                 {
-                    _smoothGravity = JumpVelocity(jumpHeight, _jumpGravity);
+                    _smoothGravity = JumpVelocity(jumpHeight, _gravityDirection, _jumpGravityScale * _gravityForce);
                     _currentFastFallBuffer = 0f;
                     _currentCoyoteTime = 0f;
                     _currentJumpBuffer = 0f;
