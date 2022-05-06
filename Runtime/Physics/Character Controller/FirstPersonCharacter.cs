@@ -20,6 +20,7 @@ namespace UnityExtras
         [field: SerializeField] [field: Tooltip("How far in degrees can you move the camera down")] [field: Min(0f)] public float bottomClamp { get; set; } = 89.9f;
 
         [field: Header("Input")]
+        [field: SerializeField] public bool enableInputOnStart { get; set; } = true;
         [field: SerializeField] public InputActionProperty moveAction { get; set; }
         [field: SerializeField] public InputActionProperty lookAction { get; set; }
         [field: SerializeField] public InputActionProperty sprintAction { get; set; }
@@ -27,13 +28,15 @@ namespace UnityExtras
 
         private float _lookPitch;
 
-        private void Awake()
+        private void Start()
         {
-            // BAD CODE!!!
-            moveAction.action.Enable();
-            lookAction.action.Enable();
-            sprintAction.action.Enable();
-            jumpAction.action.Enable();
+            if (enableInputOnStart)
+            {
+                moveAction.action.Enable();
+                lookAction.action.Enable();
+                sprintAction.action.Enable();
+                jumpAction.action.Enable();
+            }
         }
 
         private void OnEnable()
