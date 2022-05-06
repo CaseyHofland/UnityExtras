@@ -27,7 +27,10 @@ namespace UnityExtras.Input
             else if (context.phase.IsInProgress())
             {
                 activationTime += lastDeltaTime;
-                context.PerformedAndStayPerformed();
+                if (!context.action.WasPerformedThisFrame())
+                {
+                    context.PerformedAndStayPerformed();
+                }
                 context.SetTimeout(0.000001f);
                 lastDeltaTime = Time.deltaTime;
             }
