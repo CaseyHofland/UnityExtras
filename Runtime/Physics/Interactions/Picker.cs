@@ -1,5 +1,6 @@
-#nullable enable
+﻿#nullable enable
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace UnityExtras
 {
@@ -12,10 +13,41 @@ namespace UnityExtras
         [field: SerializeField] public LayerMask layers { get; set; } = Physics.AllLayers;
         [field: SerializeField] public QueryTriggerInteraction queryTriggerInteraction { get; set; }
 
+        [field: Header("Input")]
+        [field: SerializeField] public InputActionProperty holdAction { get; set; }
+
+        private bool _useInput;
+
         public PickUp? heldPickUp { get; private set; }
+
+        private void Awake()
+        {
+            if (_useInput = (holdAction.action != null))
+            {
+                holdAction.action!.Enable();
+                holdAction.action!.performed += HoldPerformed;
+            }
+        }
+
+        private void HoldPerformed(InputAction.CallbackContext context)
+        {
+            if (heldPickUp != null)
+            {
+                Drop();
+            }
+            else
+            {
+                TryHold(out _);
+            }
+        }
 
         private void OnDestroy()
         {
+            if (_useInput)
+            {
+                holdAction.action.performed -= HoldPerformed;
+            }
+
             Drop();
         }
 
@@ -62,6 +94,16 @@ namespace UnityExtras
             {
                 tmp.Drop();
             }
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (PickUpCast(out _))
+            {
+                Gizmos.color = Color.green;
+            }
+
+            ExtraGizmos.DrawWireCapsule(transform.position, transform.position + transform.forward * distance, radius);
         }
     }
 }
