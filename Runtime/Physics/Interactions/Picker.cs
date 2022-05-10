@@ -13,7 +13,7 @@ namespace UnityExtras
         [field: SerializeField] public LayerMask layers { get; set; } = Physics.AllLayers;
         [field: SerializeField] public QueryTriggerInteraction queryTriggerInteraction { get; set; }
 
-        [field: Header("Input")]
+        [field: Header("Input (optional)")]
         [field: SerializeField] public InputActionProperty holdAction { get; set; }
 
         private bool _useInput;
