@@ -11,6 +11,9 @@ namespace UnityExtras
         public static float3 InverseSafe(float3 x, float3 defaultValue = default) => new float3(InverseSafe(x.x, defaultValue.x), InverseSafe(x.yz, defaultValue.yz));
         public static float4 InverseSafe(float4 x, float4 defaultValue = default) => new float4(InverseSafe(x.x, defaultValue.x), InverseSafe(x.yzw, defaultValue.yzw));
 
+        public static float Vector2ToRadian(Vector2 vector2) => Vector2ToDegree(vector2) * Mathf.Deg2Rad;
+        public static float Vector2ToDegree(Vector2 vector2) => Vector2.SignedAngle(Vector2.right, vector2);
+
         public static Vector2 RadianToVector2(float radian) => new Vector2(Mathf.Cos(radian), Mathf.Sin(radian));
         public static Vector2 DegreeToVector2(float degree) => RadianToVector2(degree * Mathf.Deg2Rad);
 
