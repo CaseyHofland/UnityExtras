@@ -7,24 +7,23 @@ namespace UnityExtras
     [AddComponentMenu("Physics/Crappy Slider Joint")]
     [RequireComponent(typeof(Rigidbody))]
     [ExecuteAlways]
-    public class CrappySliderJoint : MonoBehaviour, ISerializationCallbackReceiver
+    public class CrappySliderJoint : MonoBehaviour
     {
         [SerializeField][HideInInspector] private Rigidbody? _rigidbody;
         public new Rigidbody rigidbody => _rigidbody ? _rigidbody! : (_rigidbody = GetComponent<Rigidbody>());
 
-        [SerializeField][HideInInspector] private ConfigurableJoint? _configurableJoint;
-        public ConfigurableJoint configurableJoint => _configurableJoint ? _configurableJoint! : (_configurableJoint = gameObject.AddComponent<ConfigurableJoint>());
-        private ConfigurableJoint? _configurableJointDump;
+        [SerializeField][HideInInspector] private NonResetable<ConfigurableJoint?> _configurableJoint;
+        public ConfigurableJoint configurableJoint => _configurableJoint.value ? _configurableJoint.value! : (_configurableJoint.value = gameObject.AddComponent<ConfigurableJoint>());
 
-        [SerializeField] private Rigidbody _connectedBody;
-        public Rigidbody connectedBody
+        [SerializeField] private Rigidbody? _connectedBody;
+        public Rigidbody? connectedBody
         {
             get => configurableJoint.connectedBody;
             set => configurableJoint.connectedBody = _connectedBody = value;
         }
 
-        [SerializeField] private ArticulationBody _connectedArticulationBody;
-        public ArticulationBody connectedArticulationBody
+        [SerializeField] private ArticulationBody? _connectedArticulationBody;
+        public ArticulationBody? connectedArticulationBody
         {
             get => configurableJoint.connectedArticulationBody;
             set => configurableJoint.connectedArticulationBody = _connectedArticulationBody = value;
@@ -209,6 +208,16 @@ namespace UnityExtras
             connectedMassScale = _connectedMassScale;
         }
 
+        private void FixedUpdate()
+        {
+            if (rigidbody.IsSleeping())
+            {
+                return;
+            }
+
+            TryJointBreak();
+        }
+
         private void Reset()
         {
             OnValidate();
@@ -231,25 +240,14 @@ namespace UnityExtras
             }
         }
 
-        private void OnJointBreak(float breakForce)
+        private void TryJointBreak()
         {
-            Debug.Log("Needs testing!");
-            //if (breakForce > this.breakForce)
-            //{
-            //    Destroy(this);
-            //}
-        }
-
-        public void OnBeforeSerialize()
-        {
-            _configurableJointDump = _configurableJoint;
-        }
-
-        public void OnAfterDeserialize()
-        {
-            if (_configurableJointDump != default)
+            if (rigidbody.velocity.sqrMagnitude >= breakForce * breakForce
+                || rigidbody.angularVelocity.sqrMagnitude >= breakTorque * breakTorque)
             {
-                _configurableJoint = _configurableJointDump;
+                SendMessage("OnJointBreak", rigidbody.velocity.magnitude, SendMessageOptions.DontRequireReceiver);
+                Destroy(this);
+                return;
             }
         }
     }
