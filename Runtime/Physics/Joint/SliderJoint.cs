@@ -1,3 +1,4 @@
+﻿#nullable enable
 using System;
 using UnityEngine;
 
@@ -8,201 +9,97 @@ namespace UnityExtras
     [ExecuteAlways]
     public class SliderJoint : MonoBehaviour
     {
-        [SerializeField] private Rigidbody _connectedBody;
-        [SerializeField] private ArticulationBody _connectedArticulationBody;
-        [SerializeField] private Vector3 _anchor;
-        [SerializeField] private bool _autoConfigureConnectedAnchor = true;
-        [SerializeField] private Vector3 _connectedAnchor;
-        [SerializeField] private SliderAxis _motion;
+        [SerializeField][HideInInspector] private Rigidbody? _rigidbody;
+        public new Rigidbody rigidbody => _rigidbody ? _rigidbody! : (_rigidbody = GetComponent<Rigidbody>());
 
-        [Header("Soft Joint Limit")]
-        [SerializeField] private float _spring;
-        [SerializeField] private float _damper;
+        [SerializeField][HideInInspector] private NonResetable<ConfigurableJoint?> _configurableJoint;
+        public ConfigurableJoint configurableJoint => _configurableJoint.value ? _configurableJoint.value! : (_configurableJoint.value = gameObject.AddComponent<ConfigurableJoint>());
 
-        [SerializeField] private bool _useLimits;
-        [SerializeField] private float _limit;
-        //[SerializeField] private float _minLimit;
-        //[SerializeField] private float _maxLimit;
-
-        [SerializeField] private float _bounciness;
-        [SerializeField] private float _contactDistance;
-        [Space(12f)]
-
-        // This is the order where the Unimplemented values should be.
-
-        [SerializeField] private float _breakForce = float.PositiveInfinity;
-        [SerializeField] private float _breakTorque = float.PositiveInfinity;
-        [SerializeField] private bool _enableCollision = false;
-        [SerializeField] private bool _enablePreprocessing = true;
-        [SerializeField] private float _massScale = 1f;
-        [SerializeField] private float _connectedMassScale = 1f;
-
-        [Header("Unimplemented")]
-
-        [SerializeField] private bool _autoConfigureAngle;
-        [SerializeField] private Vector3 _angle;
-        [SerializeField] private bool _useMotor;
-        [SerializeField] private JointMotor _motor;
-
-        #region ConfigurableJoint authoring
-        [SerializeField] [HideInInspector] private ConfigurableJoint configurableJoint;
-
-        public Rigidbody connectedBody
+        [SerializeField] private Rigidbody? _connectedBody;
+        public Rigidbody? connectedBody
         {
             get => configurableJoint.connectedBody;
             set => configurableJoint.connectedBody = _connectedBody = value;
         }
 
-        public ArticulationBody connectedArticulationBody
-        {
-            get => configurableJoint.connectedArticulationBody;
-            set => configurableJoint.connectedArticulationBody = _connectedArticulationBody = value;
-        }
+        //[SerializeField] private ArticulationBody? _connectedArticulationBody;
+        //public ArticulationBody? connectedArticulationBody
+        //{
+        //    get => configurableJoint.connectedArticulationBody;
+        //    set => configurableJoint.connectedArticulationBody = _connectedArticulationBody = value;
+        //}
 
-        public bool autoConfigureConnectedAnchor
-        {
-            get => configurableJoint.autoConfigureConnectedAnchor;
-            set => configurableJoint.autoConfigureConnectedAnchor = _autoConfigureConnectedAnchor = value;
-        }
-
+        [SerializeField] private Vector3 _anchor;
         public Vector3 anchor
         {
             get => configurableJoint.anchor;
             set => configurableJoint.anchor = _anchor = value;
         }
 
+        [SerializeField] private Vector3 _connectedAnchor;
         public Vector3 connectedAnchor
         {
-            get => configurableJoint.connectedAnchor;
-            set => configurableJoint.connectedAnchor = _connectedAnchor = value;
+            get => configurableJoint.connectedAnchor - _connectedAnchorOffset;
+            set => configurableJoint.connectedAnchor = (_connectedAnchor = value) + _connectedAnchorOffset;
         }
 
-        public SliderAxis motion
+        [SerializeField] private Quaternion _angle;
+        public Quaternion angle
         {
-            get
+            get => rigidbody.rotation * Quaternion.LookRotation(Vector3.Cross(configurableJoint.axis, configurableJoint.secondaryAxis), configurableJoint.secondaryAxis);
+            set
             {
-                switch (_motion)
+                var a = Quaternion.Inverse(rigidbody.rotation) * (_angle = value);
+                configurableJoint.axis = a * Vector3.right;
+                configurableJoint.secondaryAxis = a * Vector3.up;
+
+                connectedAnchor = _connectedAnchor;
+            }
+        }
+
+        [SerializeField] private bool _revolving = false;
+        public bool revolving
+        {
+            get => configurableJoint.angularXMotion == ConfigurableJointMotion.Free;
+            set => configurableJoint.angularXMotion = (_revolving = value) ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Locked;
+        }
+
+        [field: SerializeField] public bool useLimits { get; set; }
+
+        [SerializeField] private Limits _limits;
+
+        public float minDistance
+        {
+            get => _limits.min;
+            set
+            {
+                _limits.min = value;
+                maxDistance = _limits.max;
+            }
+        }
+        
+        public float maxDistance
+        {
+            get => _limits.max;
+            set
+            {
+                _limits.max = Mathf.Max(value, minDistance);
+                if (!_useLimits)
                 {
-                    case SliderAxis.X when configurableJoint.xMotion != ConfigurableJointMotion.Locked
-                        && configurableJoint.yMotion == ConfigurableJointMotion.Locked
-                        && configurableJoint.zMotion == ConfigurableJointMotion.Locked:
-                        return SliderAxis.X;
-                    case SliderAxis.Y when configurableJoint.xMotion == ConfigurableJointMotion.Locked
-                        && configurableJoint.yMotion != ConfigurableJointMotion.Locked
-                        && configurableJoint.zMotion == ConfigurableJointMotion.Locked:
-                        return SliderAxis.Y;
-                    case SliderAxis.Z when configurableJoint.xMotion == ConfigurableJointMotion.Locked
-                        && configurableJoint.yMotion == ConfigurableJointMotion.Locked
-                        && configurableJoint.zMotion != ConfigurableJointMotion.Locked:
-                        return SliderAxis.Z;
-                    default:
-                        throw new InvalidConfigurationException($"The underlying joint is not in any valid Axis configuration. The joint has likely been modified unintentionally.");
+                    configurableJoint.xMotion = ConfigurableJointMotion.Free;
                 }
-            }
-            set
-            {
-                switch (_motion = value)
+                else
                 {
-                    case SliderAxis.X:
-                        configurableJoint.xMotion = _useLimits ? ConfigurableJointMotion.Limited : ConfigurableJointMotion.Free;
-                        configurableJoint.yMotion = ConfigurableJointMotion.Locked;
-                        configurableJoint.zMotion = ConfigurableJointMotion.Locked;
-                        break;
-                    case SliderAxis.Y:
-                        configurableJoint.xMotion = ConfigurableJointMotion.Locked;
-                        configurableJoint.yMotion = _useLimits ? ConfigurableJointMotion.Limited : ConfigurableJointMotion.Free;
-                        configurableJoint.zMotion = ConfigurableJointMotion.Locked;
-                        break;
-                    case SliderAxis.Z:
-                        configurableJoint.xMotion = ConfigurableJointMotion.Locked;
-                        configurableJoint.yMotion = ConfigurableJointMotion.Locked;
-                        configurableJoint.zMotion = _useLimits ? ConfigurableJointMotion.Limited : ConfigurableJointMotion.Free;
-                        break;
+                    configurableJoint.xMotion = ConfigurableJointMotion.Limited;
+
+                    var linearLimit = configurableJoint.linearLimit;
+                    linearLimit.limit = _limit;
+                    configurableJoint.linearLimit = linearLimit;
                 }
+
+                connectedAnchor = _connectedAnchor;
             }
         }
-
-        public float spring
-        {
-            get => configurableJoint.linearLimitSpring.spring;
-            set
-            {
-                var linearLimitSpring = configurableJoint.linearLimitSpring;
-                linearLimitSpring.spring = _spring = value;
-                configurableJoint.linearLimitSpring = linearLimitSpring;
-            }
-        }
-
-        public float damper
-        {
-            get => configurableJoint.linearLimitSpring.damper;
-            set
-            {
-                var linearLimitSpring = configurableJoint.linearLimitSpring;
-                linearLimitSpring.damper = _damper = value;
-                configurableJoint.linearLimitSpring = linearLimitSpring;
-            }
-        }
-
-        public bool useLimits
-        {
-            get
-            {
-                switch (_motion)
-                {
-                    case SliderAxis.X:
-                        return configurableJoint.xMotion == ConfigurableJointMotion.Free;
-                    case SliderAxis.Y:
-                        return configurableJoint.yMotion == ConfigurableJointMotion.Free;
-                    case SliderAxis.Z:
-                        return configurableJoint.zMotion == ConfigurableJointMotion.Free;
-                    default:
-                        throw new InvalidConfigurationException($"The underlying joint is not in any valid Axis configuration. The joint has likely been modified unintentionally.");
-                }
-            }
-            set
-            {
-                var jointMotion = (_useLimits = value) 
-                    ? ConfigurableJointMotion.Limited 
-                    : ConfigurableJointMotion.Free;
-
-                switch (_motion)
-                {
-                    case SliderAxis.X:
-                        configurableJoint.xMotion = jointMotion;
-                        break;
-                    case SliderAxis.Y:
-                        configurableJoint.yMotion = jointMotion;
-                        break;
-                    case SliderAxis.Z:
-                        configurableJoint.zMotion = jointMotion;
-                        break;
-                }
-            }
-        }
-
-        public float limit
-        {
-            get => configurableJoint.linearLimit.limit;
-            set
-            {
-                var linearLimit = configurableJoint.linearLimit;
-                linearLimit.limit = _limit = value;
-                configurableJoint.linearLimit = linearLimit;
-            }
-        }
-
-        //public float minLimit
-        //{
-        //    get =>
-        //    set =>
-        //}
-
-        //public float maxLimit
-        //{
-        //    get =>
-        //    set =>
-        //}
 
         public float bounciness
         {
@@ -210,7 +107,7 @@ namespace UnityExtras
             set
             {
                 var linearLimit = configurableJoint.linearLimit;
-                linearLimit.bounciness = _bounciness = value;
+                linearLimit.bounciness = _limits.bounciness = Mathf.Clamp01(value);
                 configurableJoint.linearLimit = linearLimit;
             }
         }
@@ -221,131 +118,160 @@ namespace UnityExtras
             set
             {
                 var linearLimit = configurableJoint.linearLimit;
-                linearLimit.contactDistance = _contactDistance = value;
+                linearLimit.contactDistance = _limits.contactDistance = Mathf.Clamp(value, 0f, float.MaxValue);
                 configurableJoint.linearLimit = linearLimit;
             }
         }
 
+        [SerializeField] private float _breakForce = float.PositiveInfinity;
         public float breakForce
         {
             get => configurableJoint.breakForce;
-            set => configurableJoint.breakForce = _breakForce = value;
+            set => configurableJoint.breakForce = _breakForce = Mathf.Max(value, 0.001f);
         }
 
+        [SerializeField] private float _breakTorque = float.PositiveInfinity;
         public float breakTorque
         {
             get => configurableJoint.breakTorque;
-            set => configurableJoint.breakTorque = _breakTorque = value;
+            set => configurableJoint.breakTorque = _breakTorque = Mathf.Max(value, 0.001f);
         }
 
+        [SerializeField] private bool _enableCollision;
         public bool enableCollision
         {
             get => configurableJoint.enableCollision;
             set => configurableJoint.enableCollision = _enableCollision = value;
         }
 
+        [SerializeField] private bool _enablePreprocessing = true;
         public bool enablePreprocessing
         {
             get => configurableJoint.enablePreprocessing;
             set => configurableJoint.enablePreprocessing = _enablePreprocessing = value;
         }
 
+        [SerializeField] private float _massScale = 1f;
         public float massScale
         {
             get => configurableJoint.massScale;
-            set => configurableJoint.massScale = _massScale = value;
+            set => configurableJoint.massScale = _massScale = Mathf.Clamp(value, 0.00001f, float.MaxValue);
         }
 
+        [SerializeField] private float _connectedMassScale = 1f;
         public float connectedMassScale
         {
             get => configurableJoint.connectedMassScale;
-            set => configurableJoint.connectedMassScale = _connectedMassScale = value;
+            set => configurableJoint.connectedMassScale = _connectedMassScale = Mathf.Clamp(value, 0.00001f, float.MaxValue);
         }
 
-        public static implicit operator Joint(SliderJoint sliderJoint) => sliderJoint.configurableJoint;
-        public static explicit operator SliderJoint(Joint joint)
+        private float _limit => (maxDistance - minDistance) * 0.5f;
+        private bool _limitIsFinite => !float.IsNaN(_limit) && !float.IsInfinity(_limit);
+        private bool _useLimits => useLimits && _limitIsFinite;
+        private Vector3 _connectedAnchorOffset => _useLimits ? rigidbody.rotation * configurableJoint.axis * (_limit + minDistance) : default;
+
+        [Serializable]
+        private struct Limits
         {
-            var configurableJoint = (ConfigurableJoint)joint;
-            var sliderJoints = configurableJoint.GetComponents<SliderJoint>();
-            var sliderJoint = Array.Find(sliderJoints, sliderJoint => sliderJoint.configurableJoint == configurableJoint);
-
-            return !sliderJoint ? throw new InvalidCastException("Specified cast is not valid.") : sliderJoint;
+            public float min;
+            public float max;
+            public float bounciness;
+            public float contactDistance;
         }
-        #endregion
 
-        #region Unity Methods
+        [ContextMenu(nameof(AutoConfigureConnectedAnchor))]
+        public void AutoConfigureConnectedAnchor()
+        {
+            connectedAnchor = transform.TransformPoint(anchor);
+            
+            if (connectedBody != null)
+            {
+                connectedAnchor = connectedBody.transform.InverseTransformPoint(connectedAnchor);
+            }
+        }
+
+        [ContextMenu(nameof(AutoConfigureAngle))]
+        public void AutoConfigureAngle()
+        {
+            var anchorPosition = transform.TransformPoint(anchor);
+            var connectedAnchorPosition = connectedBody?.transform.TransformPoint(connectedAnchor) ?? connectedAnchor;
+
+            angle = Quaternion.Inverse(transform.rotation) * (Quaternion.LookRotation(anchorPosition - connectedAnchorPosition) * Quaternion.FromToRotation(Vector3.right, Vector3.forward));
+        }
+
         private void Awake()
         {
-            if (!configurableJoint)
-            {
-                configurableJoint = gameObject.AddComponent<ConfigurableJoint>();
-            }
-
             OnValidate();
         }
 
         private void OnValidate()
         {
-            connectedBody = _connectedBody;
-            connectedArticulationBody = _connectedArticulationBody;
-            autoConfigureConnectedAnchor = _autoConfigureConnectedAnchor;
+            configurableJoint.hideFlags = HideFlags.NotEditable | HideFlags.HideInInspector;
+            configurableJoint.autoConfigureConnectedAnchor = false;
+            configurableJoint.yMotion = configurableJoint.zMotion = configurableJoint.angularYMotion = configurableJoint.angularZMotion = ConfigurableJointMotion.Locked;
+
             anchor = _anchor;
+            angle = _angle;
+            revolving = _revolving;
+            minDistance = _limits.min;
+            bounciness = _limits.bounciness;
+            contactDistance = _limits.contactDistance;
 
-            if (autoConfigureConnectedAnchor)
-            {
-                _connectedAnchor = connectedAnchor;
-            }
-            else
-            {
-                connectedAnchor = _connectedAnchor;
-            }
-
-            motion = _motion;
-
-            spring = _spring;
-            damper = _damper;
-            useLimits = _useLimits;
-            limit = _limit;
-            bounciness = _bounciness;
-            contactDistance = _contactDistance;
-
+            connectedBody = _connectedBody;
+            //connectedArticulationBody = _connectedArticulationBody;
             breakForce = _breakForce;
             breakTorque = _breakTorque;
             enableCollision = _enableCollision;
             enablePreprocessing = _enablePreprocessing;
             massScale = _massScale;
             connectedMassScale = _connectedMassScale;
+        }
 
-            configurableJoint.angularXMotion = ConfigurableJointMotion.Locked;
-            configurableJoint.angularYMotion = ConfigurableJointMotion.Locked;
-            configurableJoint.angularZMotion = ConfigurableJointMotion.Locked;
+        private void FixedUpdate()
+        {
+            if (rigidbody.IsSleeping())
+            {
+                return;
+            }
 
-            configurableJoint.hideFlags |= HideFlags.NotEditable;
+            TryJointBreak();
+        }
+
+        private void OnDisable()
+        {
+            enabled = true;
+        }
+
+        private void Reset()
+        {
+            OnValidate();
         }
 
         private void OnDestroy()
         {
 #if UNITY_EDITOR
-            if (Application.IsPlaying(this))
+            if (!Application.IsPlaying(this))
             {
-                Destroy(configurableJoint);
+                if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+                {
+                    UnityEditor.EditorApplication.delayCall += () => DestroyImmediate(_configurableJoint);
+                }
             }
-            else if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
-            {
-                UnityEditor.EditorApplication.delayCall += () => DestroyImmediate(configurableJoint);
-            }
-#else
-            Destroy(configurableJoint);
+            else
 #endif
+            {
+                Destroy(_configurableJoint);
+            }
         }
 
-        private void OnJointBreak(float breakForce)
+        private void TryJointBreak()
         {
-            if (breakForce > this.breakForce)
+            if (rigidbody.velocity.sqrMagnitude >= breakForce * breakForce
+                || rigidbody.angularVelocity.sqrMagnitude >= breakTorque * breakTorque)
             {
+                SendMessage("OnJointBreak", rigidbody.velocity.magnitude, SendMessageOptions.DontRequireReceiver);
                 Destroy(this);
             }
         }
-        #endregion
     }
 }
