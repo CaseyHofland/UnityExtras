@@ -72,6 +72,7 @@ namespace UnityExtras
         }
 
         private float _gravityForce;
+        private float _currentGravityForce => _currentGravityScale * _gravityForce;
         private Vector3 _gravityDirection;
         private Vector3 _moveVelocityScale;
 
@@ -164,7 +165,7 @@ namespace UnityExtras
             }
 
             // Apply gravity over time if under terminal velocity (multiply by delta time twice to linearly speed up over time).
-            var gravityDeltaSpeed = _gravityForce * Time.deltaTime;
+            var gravityDeltaSpeed = _currentGravityForce * Time.deltaTime;
             var factor = Clamp(terminalVelocity - _smoothGravity.magnitude, -gravityDeltaSpeed, gravityDeltaSpeed);
             _smoothGravity += _gravityDirection * factor;
         }
