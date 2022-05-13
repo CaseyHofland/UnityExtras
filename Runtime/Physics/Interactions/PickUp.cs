@@ -27,6 +27,10 @@ namespace UnityExtras
         [field: SerializeField] public bool usePickUpRotation { get; set; }
         [field: SerializeField][field: Range(0f, 1f)] public float followUpwards { get; set; } = 0f;
 
+        [field: Header("Release Settings")]
+        [field: SerializeField] public float maxReleaseForce { get; set; } = float.PositiveInfinity;
+        [field: SerializeField] public float maxReleaseTorque { get; set; } = float.PositiveInfinity;
+
         [field: Header("Physics Settings")]
         [field: SerializeField] public TargetSettings targetSettings { get; set; } = new TargetSettings();
         [field: SerializeField] public TargetSettings gyroSettings { get; set; } = new TargetSettings();
@@ -216,6 +220,16 @@ namespace UnityExtras
                 Destroy(gyroJoint);
 
                 rigidbodySettings.Restore(rigidbody);
+
+                if (rigidbody.velocity.sqrMagnitude > maxReleaseForce * maxReleaseForce)
+                {
+                    rigidbody.velocity *= maxReleaseForce / rigidbody.velocity.magnitude;
+                }
+
+                if (rigidbody.angularVelocity.sqrMagnitude > maxReleaseTorque * maxReleaseTorque)
+                {
+                    rigidbody.angularVelocity *= maxReleaseTorque / rigidbody.angularVelocity.magnitude;
+                }
 
                 tmp.Drop();
             }
