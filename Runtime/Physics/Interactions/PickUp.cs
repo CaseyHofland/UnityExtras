@@ -21,8 +21,9 @@ namespace UnityExtras
             [field: SerializeField][field: Min(0f)] public float breakForce { get; set; } = float.PositiveInfinity;
         }
 
+
         [field: Header("Follow Settings")]
-        [field: SerializeField] public Vector3 followCenter { get; set; } = Vector3.forward * 5f;
+        [field: SerializeField] public Vector3 followCenter { get; set; } = Vector3.forward * 3f;
         [field: SerializeField] public Quaternion followRotation { get; set; } = Quaternion.identity;
         [field: SerializeField] public bool usePickUpRotation { get; set; }
         [field: SerializeField][field: Range(0f, 1f)] public float followUpwards { get; set; } = 0f;
@@ -57,6 +58,8 @@ namespace UnityExtras
                 this.value = this.storedValue = value;
                 this.storeMethod = storeMethod;
             }
+
+            public static implicit operator T(Store<T> store) => store.storedValue;
 
             public T StoreValue(T value)
             {
@@ -155,11 +158,13 @@ namespace UnityExtras
                 targetJoint.maxForce = targetSettings.maxForce;
                 targetJoint.dampingRatio = targetSettings.dampingRatio;
                 targetJoint.frequency = targetSettings.frequency;
+                targetJoint.breakForce = targetSettings.breakForce;
 
                 gyroJoint.enabled = gyroSettings.enabled;
                 gyroJoint.maxTorque = gyroSettings.maxForce;
                 gyroJoint.dampingRatio = gyroSettings.dampingRatio;
                 gyroJoint.frequency = gyroSettings.frequency;
+                gyroJoint.breakTorque = gyroSettings.breakForce;
 
                 // Set targets.
                 if (Physics.Raycast(holdingPicker.transform.position, holdingPicker.transform.forward, out var hit, followCenter.magnitude, ExtraPhysics.GetLayerCollisionMask(gameObject.layer), QueryTriggerInteraction.Ignore))
