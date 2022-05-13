@@ -207,13 +207,10 @@ namespace UnityExtras
             // Jump or activate the jump buffer.
             if (characterController.isGrounded || _currentCoyoteTime > 0f)
             {
-                if (_fastFalling)
-                {
-                    _smoothGravity = JumpVelocity(jumpHeight, _gravityDirection, _jumpGravityScale * _gravityForce);
-                    _currentFastFallBuffer = 0f;
-                    _currentCoyoteTime = 0f;
-                    _currentJumpBuffer = 0f;
-                }
+                _smoothGravity = JumpVelocity(jumpHeight, _gravityDirection, _jumpGravityScale * _gravityForce);
+                _currentFastFallBuffer = 0f;
+                _currentCoyoteTime = 0f;
+                _currentJumpBuffer = 0f;
             }
             else
             {
