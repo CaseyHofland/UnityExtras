@@ -1,7 +1,8 @@
 ﻿#nullable enable
-using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
+using Input = UnityExtras.InputSystem.Input;
 
 namespace UnityExtras
 {
@@ -37,73 +38,24 @@ namespace UnityExtras
         }
 
         #region Input
-        [field: Space(12)]
-        [field: SerializeField] public Input input { get; set; } = new Input();
-
-        public bool enableInputOnStart
-        {
-            get => input.enableInputOnStart;
-            set => input.enableInputOnStart = value;
-        }
-
-        public InputActionProperty moveAction
-        {
-            get => input.moveAction;
-            set => input.moveAction = value;
-        }
-
-        public InputActionProperty lookAction
-        {
-            get => input.lookAction;
-            set => input.lookAction = value;
-        }
-
-        public InputActionProperty sprintAction
-        {
-            get => input.sprintAction;
-            set => input.sprintAction = value;
-        }
-
-        public InputActionProperty jumpAction
-        {
-            get => input.jumpAction;
-            set => input.jumpAction = value;
-        }
-
-        [Serializable]
-        public class Input
-        {
-            [field: SerializeField] public bool enableInputOnStart { get; set; } = true;
-            [field: SerializeField] public InputActionProperty moveAction { get; set; }
-            [field: SerializeField] public InputActionProperty lookAction { get; set; }
-            [field: SerializeField] public InputActionProperty sprintAction { get; set; }
-            [field: SerializeField] public InputActionProperty jumpAction { get; set; }
-        }
-
-
-        private void Start()
-        {
-            if (enableInputOnStart)
-            {
-                moveAction.action.Enable();
-                lookAction.action.Enable();
-                sprintAction.action.Enable();
-                jumpAction.action.Enable();
-            }
-        }
+        [field: Header("Input")]
+        [field: SerializeField] public Input moveInput { get; set; }
+        [field: SerializeField] public Input lookInput { get; set; }
+        [field: SerializeField] public Input sprintInput { get; set; }
+        [field: SerializeField] public Input jumpInput { get; set; }
 
         private void OnEnable()
         {
-            moveAction.action.performed += MovePerformed;
-            lookAction.action.performed += LookPerformed;
-            jumpAction.action.performed += JumpPerformed;
+            moveInput.action!.performed += MovePerformed;
+            lookInput.action!.performed += LookPerformed;
+            jumpInput.action!.performed += JumpPerformed;
         }
 
         private void OnDisable()
         {
-            moveAction.action.performed -= MovePerformed;
-            lookAction.action.performed -= LookPerformed;
-            jumpAction.action.performed -= JumpPerformed;
+            moveInput.action!.performed -= MovePerformed;
+            lookInput.action!.performed -= LookPerformed;
+            jumpInput.action!.performed -= JumpPerformed;
         }
 
         private void MovePerformed(InputAction.CallbackContext context)

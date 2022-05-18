@@ -1,0 +1,21 @@
+{
+    "name": "CaseyDeCoder.UnityExtras.InputSystem.Editor",
+    "rootNamespace": "UnityExtras.InputSystem.Editor",
+    "references": [
+        "GUID:806b0a144ac65a74899d99f880ae9914",
+        "GUID:c4879cbc2f71c10408bbd8bb857bc1f7",
+        "GUID:3af149b2dee194b1c9b437b46b889853",
+        "GUID:75469ad4d38634e559750d17036d5f7c"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
