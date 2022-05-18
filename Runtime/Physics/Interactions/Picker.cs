@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+using Input = UnityExtras.InputSystem.Input;
+
 namespace UnityExtras
 {
     [DisallowMultipleComponent]
@@ -14,19 +16,26 @@ namespace UnityExtras
         [field: SerializeField] public QueryTriggerInteraction queryTriggerInteraction { get; set; }
 
         [field: Header("Input (optional)")]
-        [field: SerializeField] public InputActionProperty holdAction { get; set; }
-
-        private bool _useInput;
+        [field: SerializeField] public Input holdInput { get; set; }
 
         public PickUp? heldPickUp { get; private set; }
 
         private void Awake()
         {
-            if (_useInput = (holdAction.action != null))
+            if (holdInput.action != null)
             {
-                holdAction.action!.Enable();
-                holdAction.action!.performed += HoldPerformed;
+                holdInput.action.performed += HoldPerformed;
             }
+        }
+
+        private void OnDestroy()
+        {
+            if (holdInput.action != null)
+            {
+                holdInput.action.performed -= HoldPerformed;
+            }
+
+            Drop();
         }
 
         private void HoldPerformed(InputAction.CallbackContext context)
@@ -39,16 +48,6 @@ namespace UnityExtras
             {
                 TryHold(out _);
             }
-        }
-
-        private void OnDestroy()
-        {
-            if (_useInput)
-            {
-                holdAction.action.performed -= HoldPerformed;
-            }
-
-            Drop();
         }
 
         public bool PickUpCast(out PickUp? pickUp)
