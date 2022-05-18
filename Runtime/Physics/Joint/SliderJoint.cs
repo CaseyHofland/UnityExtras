@@ -12,8 +12,8 @@ namespace UnityExtras
         [SerializeField][HideInInspector] private Rigidbody? _rigidbody;
         public new Rigidbody rigidbody => _rigidbody ? _rigidbody! : (_rigidbody = GetComponent<Rigidbody>());
 
-        [SerializeField][HideInInspector] private NonResetable<ConfigurableJoint?> _configurableJoint;
-        public ConfigurableJoint configurableJoint => _configurableJoint.value ? _configurableJoint.value! : (_configurableJoint.value = gameObject.AddComponent<ConfigurableJoint>());
+        [SerializeField][HideInInspector] private RequiredComponent<ConfigurableJoint> _configurableJoint;
+        public ConfigurableJoint configurableJoint => _configurableJoint.GetComponent(gameObject);
 
         [SerializeField] private Rigidbody? _connectedBody;
         public Rigidbody? connectedBody
@@ -249,19 +249,7 @@ namespace UnityExtras
 
         private void OnDestroy()
         {
-#if UNITY_EDITOR
-            if (!Application.IsPlaying(this))
-            {
-                if (!UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
-                {
-                    UnityEditor.EditorApplication.delayCall += () => DestroyImmediate(_configurableJoint);
-                }
-            }
-            else
-#endif
-            {
-                Destroy(_configurableJoint);
-            }
+            ExtraObject.DestroySafe(_configurableJoint);
         }
 
         private void TryJointBreak()
