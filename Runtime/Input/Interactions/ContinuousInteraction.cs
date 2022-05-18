@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace UnityExtras.Input
+namespace UnityExtras.InputSystem
 {
 #if UNITY_EDITOR
     [UnityEditor.InitializeOnLoad]
@@ -14,7 +14,7 @@ namespace UnityExtras.Input
 
         static ContinuousInteraction()
         {
-            InputSystem.RegisterInteraction<ContinuousInteraction>();
+            UnityEngine.InputSystem.InputSystem.RegisterInteraction<ContinuousInteraction>();
         }
 
         public void Process(ref InputInteractionContext context)

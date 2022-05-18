@@ -1,6 +1,6 @@
 {
-    "name": "CaseyDeCoder.UnityExtras.Input",
-    "rootNamespace": "UnityExtras.Input",
+    "name": "CaseyDeCoder.UnityExtras.InputSystem",
+    "rootNamespace": "UnityExtras.InputSystem",
     "references": [
         "GUID:806b0a144ac65a74899d99f880ae9914",
         "GUID:75469ad4d38634e559750d17036d5f7c"
