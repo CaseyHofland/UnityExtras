@@ -15,10 +15,10 @@ namespace UnityExtras
         private CharacterController? _characterController;
         public CharacterController characterController => _characterController ? _characterController! : (_characterController = GetComponent<CharacterController>());
 
-        public static implicit operator CharacterController(CharacterMover characterControllerMove) => characterControllerMove.characterController;
+        public static implicit operator CharacterController(CharacterMover characterMover) => characterMover.characterController;
 
         private const float speedOffset = 0.1f;
-        private const float fastFallBuffer = 0.01f;
+        private const float fastFallBuffer = 0.05f;
 
         [field: Header("Move")]
         [field: SerializeField] [field: Tooltip("Move speed of the character in m/s")][field: Min(0f)] public float moveSpeed { get; set; } = 2.0f;
@@ -197,8 +197,11 @@ namespace UnityExtras
         {
             // Set target speed based on move speed and
             var targetSpeed = moveSpeed + (sprint ? sprintBoost : 0f);
-            targetMotion = targetSpeed * (transform.rotation * movement);
+            targetMotion += targetSpeed * movement;
         }
+
+        public void MoveRelative(Vector3 movement) => MoveRelative(movement, default);
+        public void MoveRelative(Vector3 movement, bool sprint) => Move(transform.rotation * movement, sprint);
 
         public void Jump()
         {

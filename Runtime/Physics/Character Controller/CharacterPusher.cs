@@ -38,17 +38,17 @@ namespace UnityExtras
 				return;
 			}
 
-			// We dont want to push objects below us.
+			// We don't want to push objects below us.
 			if (hit.moveDirection.y < downPushThreshold)
 			{
 				return;
 			}
 
-			// Calculate push direction from move direction, horizontal motion only.
-			Vector3 pushDir = new Vector3(hit.moveDirection.x, 0.0f, hit.moveDirection.z);
+			// Calculate the push direction from the move direction, horizontal motion only.
+			Vector3 pushDirection = new Vector3(hit.moveDirection.x, 0.0f, hit.moveDirection.z);
 
-			// Apply the push and take strength into account.
-			body.AddForce(pushDir * pushStrength, ForceMode.Impulse);
+			// Apply the push taking strength into account.
+			body.AddForce(pushDirection * pushStrength, ForceMode.Impulse);
 		}
 	}
 }

@@ -110,7 +110,7 @@ namespace UnityExtras
         {
             var direction2D = context.ReadValue<Vector2>();
             var direction = new Vector3(direction2D.x, 0f, direction2D.y);
-            characterMover.Move(direction, sprintAction.action.phase.IsInProgress());
+            characterMover.MoveRelative(direction, sprintInput.action!.inProgress);
         }
 
         private void LookPerformed(InputAction.CallbackContext context)
