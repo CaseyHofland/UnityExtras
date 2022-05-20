@@ -23,5 +23,17 @@ namespace UnityExtras
             Gizmos.DrawLine(start - right, end - right);
             Gizmos.DrawWireSphere(end, radius);
         }
+
+        public static void DrawArrow(Vector3 from, Vector3 to)
+        {
+            Gizmos.DrawLine(from, to);
+
+            var angle = ExtraMath.Angle(from - to);
+            var distance = (from - to).magnitude * 0.25f;
+            var leftCap = to + (Vector3)ExtraMath.Direction(angle - 30f) * distance;
+            var rightCap = to + (Vector3)ExtraMath.Direction(angle + 30f) * distance;
+            Gizmos.DrawLine(to, leftCap);
+            Gizmos.DrawLine(to, rightCap);
+        }
     }
 }
