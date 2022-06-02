@@ -24,21 +24,33 @@ namespace UnityExtras
 
         private void OnEnable()
         {
-            moveInput.action!.performed += MovePerformed;
-            jumpInput.action!.performed += JumpPerformed;
+            if (moveInput.action != null)
+            {
+                moveInput.action.performed += MovePerformed;
+            }
+            if (jumpInput.action != null)
+            {
+                jumpInput.action.performed += JumpPerformed;
+            }
         }
 
         private void OnDisable()
         {
-            moveInput.action!.performed -= MovePerformed;
-            jumpInput.action!.performed -= JumpPerformed;
+            if (moveInput.action != null)
+            {
+                moveInput.action.performed -= MovePerformed;
+            }
+            if (jumpInput.action != null)
+            {
+                jumpInput.action.performed -= JumpPerformed;
+            }
         }
 
         private void MovePerformed(InputAction.CallbackContext context)
         {
             var speed = context.ReadValue<float>();
             var direction = new Vector2(speed, 0f);
-            characterMover2D.Move(direction, sprintInput.action!.inProgress);
+            characterMover2D.Move(direction, sprintInput.action?.inProgress ?? false);
             characterMover2D.Turn(speed > 0f);
         }
 

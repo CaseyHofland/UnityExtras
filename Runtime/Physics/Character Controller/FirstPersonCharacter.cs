@@ -46,23 +46,41 @@ namespace UnityExtras
 
         private void OnEnable()
         {
-            moveInput.action!.performed += MovePerformed;
-            lookInput.action!.performed += LookPerformed;
-            jumpInput.action!.performed += JumpPerformed;
+            if (moveInput.action != null)
+            {
+                moveInput.action.performed += MovePerformed;
+            }
+            if (lookInput.action != null)
+            {
+                lookInput.action.performed += LookPerformed;
+            }
+            if (jumpInput.action != null)
+            {
+                jumpInput.action.performed += JumpPerformed;
+            }
         }
 
         private void OnDisable()
         {
-            moveInput.action!.performed -= MovePerformed;
-            lookInput.action!.performed -= LookPerformed;
-            jumpInput.action!.performed -= JumpPerformed;
+            if (moveInput.action != null)
+            {
+                moveInput.action.performed -= MovePerformed;
+            }
+            if (lookInput.action != null)
+            {
+                lookInput.action.performed -= LookPerformed;
+            }
+            if (jumpInput.action != null)
+            {
+                jumpInput.action.performed -= JumpPerformed;
+            }
         }
 
         private void MovePerformed(InputAction.CallbackContext context)
         {
             var direction2D = context.ReadValue<Vector2>();
             var direction = new Vector3(direction2D.x, 0f, direction2D.y);
-            characterMover.MoveRelative(direction, sprintInput.action!.inProgress);
+            characterMover.MoveRelative(direction, sprintInput.action?.inProgress ?? false);
         }
 
         private void LookPerformed(InputAction.CallbackContext context)
