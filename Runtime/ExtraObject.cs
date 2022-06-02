@@ -7,6 +7,11 @@ namespace UnityExtras
     {
         public static void DestroySafe(Object? @object)
         {
+            if (@object == null)
+            {
+                return;
+            }
+
 #if UNITY_EDITOR
             if (!Application.IsPlaying(@object))
             {
