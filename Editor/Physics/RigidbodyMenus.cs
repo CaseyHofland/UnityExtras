@@ -11,10 +11,15 @@ namespace UnityExtras.Editor
         {
             var rigidbody = (Rigidbody)command.context;
 
+            Undo.RecordObject(rigidbody, "Use 2D Drag");
+
             var fixedDrag = Time.fixedDeltaTime * rigidbody.drag;
             var dragFactor2D = 1f + fixedDrag;
             rigidbody.drag /= dragFactor2D;
-            rigidbody.angularDrag /= dragFactor2D;
+
+            var fixedAngularDrag = Time.fixedDeltaTime * rigidbody.angularDrag;
+            var angularDragFactor2D = 1f + fixedAngularDrag;
+            rigidbody.angularDrag /= angularDragFactor2D;
         }
     }
 }

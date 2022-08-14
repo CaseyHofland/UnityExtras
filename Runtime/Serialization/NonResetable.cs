@@ -13,7 +13,7 @@ namespace UnityExtras
         [SerializeField] [HideInInspector] private bool valid;
 
         public static implicit operator T(NonResetable<T> nonResetable) => nonResetable.value;
-        public static implicit operator NonResetable<T>(T value) => new NonResetable<T> { value = value };
+        public static implicit operator NonResetable<T>(T value) => new() { value = value };
 
         public void OnBeforeSerialize()
         {

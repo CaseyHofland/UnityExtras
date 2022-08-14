@@ -13,11 +13,13 @@ namespace UnityExtras
 
         public static implicit operator T?(RequiredComponent<T> requiredComponent) => requiredComponent.component;
 
-        public T GetComponent(GameObject gameObject)
+        public T GetComponent(GameObject gameObject) => GetComponent(gameObject, default);
+        public T GetComponent(GameObject gameObject, HideFlags hideFlags)
         {
             if (component == null)
             {
                 component = _nonResetable.value != null ? _nonResetable.value : gameObject.AddComponent<T>();
+                component.hideFlags = hideFlags;
             }
 
             return _nonResetable.value = component;
