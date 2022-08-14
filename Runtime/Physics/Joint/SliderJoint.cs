@@ -6,14 +6,15 @@ namespace UnityExtras
 {
     [AddComponentMenu("Physics/Slider Joint")]
     [RequireComponent(typeof(Rigidbody))]
-    [ExecuteAlways]
-    public class SliderJoint : MonoBehaviour
+    public class SliderJoint : MonoBehaviour, IAuthor
     {
         [SerializeField][HideInInspector] private Rigidbody? _rigidbody;
         public new Rigidbody rigidbody => _rigidbody ? _rigidbody! : (_rigidbody = GetComponent<Rigidbody>());
 
         [SerializeField][HideInInspector] private RequiredComponent<ConfigurableJoint> _configurableJoint;
-        public ConfigurableJoint configurableJoint => _configurableJoint.GetComponent(gameObject);
+        public ConfigurableJoint configurableJoint => _configurableJoint.GetComponent(gameObject, HideFlags.HideInInspector);
+
+        public static implicit operator ConfigurableJoint(SliderJoint sliderJoint) => sliderJoint.configurableJoint;
 
         [SerializeField] private Rigidbody? _connectedBody;
         public Rigidbody? connectedBody
@@ -199,34 +200,17 @@ namespace UnityExtras
             angle = Quaternion.Inverse(transform.rotation) * (Quaternion.LookRotation(anchorPosition - connectedAnchorPosition) * Quaternion.FromToRotation(Vector3.right, Vector3.forward));
         }
 
-        private void Awake()
+        private void TryJointBreak()
         {
-            OnValidate();
+            if (rigidbody.velocity.sqrMagnitude >= breakForce * breakForce
+                || rigidbody.angularVelocity.sqrMagnitude >= breakTorque * breakTorque)
+            {
+                SendMessage("OnJointBreak", rigidbody.velocity.magnitude, SendMessageOptions.DontRequireReceiver);
+                Destroy(this);
+            }
         }
 
-        private void OnValidate()
-        {
-            configurableJoint.hideFlags = HideFlags.NotEditable | HideFlags.HideInInspector;
-            configurableJoint.autoConfigureConnectedAnchor = false;
-            configurableJoint.yMotion = configurableJoint.zMotion = configurableJoint.angularYMotion = configurableJoint.angularZMotion = ConfigurableJointMotion.Locked;
-
-            anchor = _anchor;
-            angle = _angle;
-            revolving = _revolving;
-            minDistance = _limits.min;
-            bounciness = _limits.bounciness;
-            contactDistance = _limits.contactDistance;
-
-            connectedBody = _connectedBody;
-            //connectedArticulationBody = _connectedArticulationBody;
-            breakForce = _breakForce;
-            breakTorque = _breakTorque;
-            enableCollision = _enableCollision;
-            enablePreprocessing = _enablePreprocessing;
-            massScale = _massScale;
-            connectedMassScale = _connectedMassScale;
-        }
-
+        #region Unity methods.
         private void FixedUpdate()
         {
             if (rigidbody.IsSleeping())
@@ -244,22 +228,71 @@ namespace UnityExtras
 
         private void Reset()
         {
-            OnValidate();
+            ((IAuthor)this).ResetAuthor();
         }
 
         private void OnDestroy()
         {
-            ExtraObject.DestroySafe(_configurableJoint);
+            ((IAuthor)this).DestroyAuthor();
+        }
+        #endregion
+
+        #region IAuthor methods.
+        [field: SerializeField][field: HideInInspector] bool IAuthor.isDeserializing { get; set; }
+
+        void IAuthor.Serialize()
+        {
+            configurableJoint.autoConfigureConnectedAnchor = false;
+            configurableJoint.yMotion = configurableJoint.zMotion = configurableJoint.angularYMotion = configurableJoint.angularZMotion = ConfigurableJointMotion.Locked;
+
+            connectedAnchor = connectedAnchor;
+
+            anchor = anchor;
+            angle = angle;
+            revolving = revolving;
+            useLimits = useLimits;
+            maxDistance = maxDistance;
+            minDistance = minDistance;
+            bounciness = bounciness;
+            contactDistance = contactDistance;
+
+            connectedBody = connectedBody;
+            //connectedArticulationBody = connectedArticulationBody;
+            breakForce = breakForce;
+            breakTorque = breakTorque;
+            enableCollision = enableCollision;
+            enablePreprocessing = enablePreprocessing;
+            massScale = massScale;
+            connectedMassScale = connectedMassScale;
         }
 
-        private void TryJointBreak()
+        void IAuthor.Deserialize()
         {
-            if (rigidbody.velocity.sqrMagnitude >= breakForce * breakForce
-                || rigidbody.angularVelocity.sqrMagnitude >= breakTorque * breakTorque)
-            {
-                SendMessage("OnJointBreak", rigidbody.velocity.magnitude, SendMessageOptions.DontRequireReceiver);
-                Destroy(this);
-            }
+            configurableJoint.autoConfigureConnectedAnchor = false;
+            configurableJoint.yMotion = configurableJoint.zMotion = configurableJoint.angularYMotion = configurableJoint.angularZMotion = ConfigurableJointMotion.Locked;
+
+            anchor = _anchor;
+            angle = _angle;
+            revolving = _revolving;
+            useLimits = _useLimits;
+            minDistance = _limits.min;
+            bounciness = _limits.bounciness;
+            contactDistance = _limits.contactDistance;
+
+            connectedBody = _connectedBody;
+            //connectedArticulationBody = _connectedArticulationBody;
+            breakForce = _breakForce;
+            breakTorque = _breakTorque;
+            enableCollision = _enableCollision;
+            enablePreprocessing = _enablePreprocessing;
+            massScale = _massScale;
+            connectedMassScale = _connectedMassScale;
         }
+
+        void IAuthor.DestroyAuthor()
+        {
+            ExtraObject.DestroyImmediateSafe(_configurableJoint);
+        }
+        #endregion
     }
 }

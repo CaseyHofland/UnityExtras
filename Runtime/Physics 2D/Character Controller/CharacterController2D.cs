@@ -5,11 +5,10 @@ namespace UnityExtras
 {
     [AddComponentMenu("Physics 2D/Character Controller 2D")]
     [DisallowMultipleComponent]
-    [ExecuteAlways]
-    public class CharacterController2D : MonoBehaviour
+    public class CharacterController2D : MonoBehaviour, IAuthor
     {
         [SerializeField][HideInInspector] private RequiredComponent<CapsuleCollider2D> _capsuleCollider2D;
-        public CapsuleCollider2D capsuleCollider2D => _capsuleCollider2D.GetComponent(gameObject);
+        public CapsuleCollider2D capsuleCollider2D => _capsuleCollider2D.GetComponent(gameObject, HideFlags.HideInInspector);
 
         public static implicit operator CapsuleCollider2D(CharacterController2D characterController2D) => characterController2D.capsuleCollider2D;
 
@@ -50,7 +49,7 @@ namespace UnityExtras
         public bool detectCollisions
         {
             get => _detectCollisions;
-            set => capsuleCollider2D.enabled = (_detectCollisions = value) && isActiveAndEnabled;
+            set => capsuleCollider2D.enabled = (_detectCollisions = value) && enabled;
         }
         public bool isGrounded => collisionFlags.HasFlag(CollisionFlags.Below);
         public Vector2 velocity { get; private set; }
@@ -72,12 +71,36 @@ namespace UnityExtras
         public const float contactOffset = 0.01f;
         public float contactOffsetCompensation => Physics2D.defaultContactOffset - contactOffset;
 
-        #region Unity Methods
-        private void Awake()
+        #region IAuthor Methods
+        [field: SerializeField][field: HideInInspector] bool IAuthor.isDeserializing { get; set; }
+
+        void IAuthor.Serialize()
         {
-            OnValidate();
+            _ = detectCollisions
+                ? enabled = capsuleCollider2D.enabled
+                : capsuleCollider2D.enabled = false;
+            capsuleCollider2D.direction = CapsuleDirection2D.Vertical;
+            center = center;
+            radius = radius;
+            height = height;
         }
 
+        void IAuthor.Deserialize()
+        {
+            capsuleCollider2D.enabled = detectCollisions && enabled;
+            capsuleCollider2D.direction = CapsuleDirection2D.Vertical;
+            center = _center;
+            radius = _radius;
+            height = _height;
+        }
+
+        void IAuthor.DestroyAuthor()
+        {
+            ExtraObject.DestroyImmediateSafe(_capsuleCollider2D);
+        }
+        #endregion
+
+        #region Unity Methods
         private void OnEnable()
         {
             capsuleCollider2D.enabled = detectCollisions;
@@ -85,22 +108,25 @@ namespace UnityExtras
 
         private void OnDisable()
         {
-            capsuleCollider2D.enabled = false;
-        }
-
-        private void OnValidate()
-        {
-            capsuleCollider2D.hideFlags = HideFlags.NotEditable | HideFlags.HideInInspector;
-            capsuleCollider2D.direction = CapsuleDirection2D.Vertical;
-
-            center = _center;
-            radius = _radius;
-            height = _height;
+            if (_capsuleCollider2D.component != null)
+            {
+                _capsuleCollider2D.component.enabled = false;
+            }
         }
 
         private void Reset()
         {
-            Awake();
+            ((IAuthor)this).ResetAuthor();
+        }
+
+        private void OnDestroy()
+        {
+            ((IAuthor)this).DestroyAuthor();
+        }
+
+        private void OnValidate()
+        {
+            Debug.LogWarning($"Standardize hit results searching, taking IgnoreCollision into account.");
         }
 
 #if UNITY_EDITOR
@@ -154,12 +180,7 @@ namespace UnityExtras
             }
         }
 #endif
-
-        private void OnDestroy()
-        {
-            ExtraObject.DestroySafe(_capsuleCollider2D);
-        }
-#endregion
+        #endregion
 
         #region Controller Methods
         public bool Cast(Vector2 direction, RaycastHit2D[] results, float distance) => Cast(capsuleCollider2D.bounds.center, direction, results, distance);
