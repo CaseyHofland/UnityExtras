@@ -165,7 +165,7 @@ namespace UnityExtras
                 verticalOffset = Vector3.zero;
             }
             var forward = new Vector3(0f, 0f, transform.forward.z).normalized;
-            horizontalOffset = effectiveRadius * (Quaternion.LookRotation(forward, verticalOffset) * Vector3.right);
+            horizontalOffset = effectiveRadius * ((forward != Vector3.zero ? Quaternion.LookRotation(forward, verticalOffset) : Quaternion.identity) * Vector3.right);
 
             // Declare ease-of-use positions.
             var center = capsuleCollider2D.bounds.center;
