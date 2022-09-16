@@ -17,7 +17,7 @@ namespace UnityExtras
         [field: SerializeField][field: Min(0f)] public float maxTorque { get; set; } = 10_000f;
         [SerializeField] private float _dampingRatio = 1f;
         [field: SerializeField][field: Min(0f)] public float frequency { get; set; } = 5f;
-        [field: SerializeField] public float breakTorque { get; set; } = float.PositiveInfinity;
+        [field: SerializeField][field: Tooltip("Maximum torque the joint can withstand before breaking. Infinity means unbreakable. [0.001, infinity].")][field: Min(0.001f)] public float breakTorque { get; set; } = float.PositiveInfinity;
 
         public float dampingRatio
         {

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace UnityExtras
 {
+    /// <summary>Wrapper for ensuring <typeparamref name="T"/> won't be reset through Unity serialization.</summary>
     [Serializable]
     public struct NonResetable<T> : ISerializationCallbackReceiver
     {

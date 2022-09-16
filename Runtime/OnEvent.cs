@@ -1,12 +1,11 @@
 ﻿#nullable enable
-using System;
 using UnityEngine;
 using UnityEngine.Events;
-
-using Object = UnityEngine.Object;
+using UnityEngine.SceneManagement;
 
 namespace UnityExtras
 {
+    /// <summary>Helper <see cref="Component"/> for quickly binding <see cref="Scene"/> functionality via <see cref="UnityEvent"/>.</summary>
     [AddComponentMenu("Event/On Event")]
     public class OnEvent : MonoBehaviour
     {
@@ -266,19 +265,25 @@ namespace UnityExtras
             }
         }
 
+        /// <summary>Removes a <see cref="GameObject"/>, <see cref="Component"/> or Asset.</summary>
+        /// <param name="obj"><see cref="Object"/> to destroy.</param>
         public new void Destroy(Object obj)
         {
             Object.Destroy(obj);
         }
 
+        /// <summary>Destroys the <see cref="Object"/> <paramref name="obj"/> immediately. You are strongly recommended to use <see cref="Destroy"/> instead.</summary>
+        /// <param name="obj"><see cref="Object"/> to destroy.</param>
         public new void DestroyImmediate(Object obj)
         {
             Object.DestroyImmediate(obj);
         }
 
+        /// <summary>Do not destroy the target <see cref="Object"/> when loading a new <see cref="Scene"/>.</summary>
+        /// <param name="target">An <see cref="Object"/> not destroyed on <see cref="Scene"/> change.</param>
         public new void DontDestroyOnLoad(Object target)
         {
-            Object.DontDestroyOnLoad(target);
+            Object.DontDestroyOnLoad( target);
         }
     }
 }

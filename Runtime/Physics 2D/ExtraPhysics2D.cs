@@ -4,12 +4,15 @@ using UnityEngine;
 
 namespace UnityExtras
 {
+    /// <summary>Extra helpers for 2D physics.</summary>
     public class ExtraPhysics2D
     {
-        internal static List<Collider2D> collidersCache = new List<Collider2D>();
-        internal static List<Collider2D> collidersComparisonCache = new List<Collider2D>();
+        internal static List<Collider2D> collidersCache = new();
+        internal static List<Collider2D> collidersComparisonCache = new();
 
+        /// <include file='./ExtraPhysics2D.xml' path='docs/IgnoreCollision/*'/>
         public static void IgnoreCollision(Rigidbody2D rigidbody, Collider2D collider) => IgnoreCollision(rigidbody, collider, true);
+        /// <include file='./ExtraPhysics2D.xml' path='docs/IgnoreCollision/*'/>
         public static void IgnoreCollision(Rigidbody2D rigidbody, Collider2D collider, bool ignore)
         {
             var collidersCount = rigidbody.GetAttachedColliders(collidersCache);
@@ -22,7 +25,9 @@ namespace UnityExtras
             }
         }
 
+        /// <include file='./ExtraPhysics2D.xml' path='docs/IgnoreCollision1/*'/>
         public static void IgnoreCollision(Rigidbody2D rigidbody1, Rigidbody2D rigidbody2) => IgnoreCollision(rigidbody1, rigidbody2, true);
+        /// <include file='./ExtraPhysics2D.xml' path='docs/IgnoreCollision1/*'/>
         public static void IgnoreCollision(Rigidbody2D rigidbody1, Rigidbody2D rigidbody2, bool ignore)
         {
             var collidersCount = rigidbody1.GetAttachedColliders(collidersCache);

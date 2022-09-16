@@ -1,0 +1,17 @@
+﻿<docs>
+    <ExtraGizmos>
+        <summary>
+            Extra gizmos are used to give visual debugging or setup aids in the <see cref="UnityEditor.SceneView"/>.
+        </summary>
+    </ExtraGizmos>
+    <DrawWireCapsule>
+        <summary>
+            Draw a wireframe capsule with radius.
+        </summary>
+    </DrawWireCapsule>
+    <DrawArrow>
+        <summary>
+            Draw an arrow starting at from towards to.
+        </summary>
+    </DrawArrow>
+</docs>

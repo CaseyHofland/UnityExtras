@@ -1,10 +1,8 @@
 #nullable enable
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Unity.Mathematics;
-
 using static Unity.Mathematics.math;
-using static UnityExtras.ExtraMath;
 
 namespace UnityExtras
 {
@@ -22,7 +20,7 @@ namespace UnityExtras
         [field: SerializeField][field: Min(0f)] public float maxForce { get; set; } = 10_000f;
         [SerializeField] private float _dampingRatio = 1f;
         [field: SerializeField][field: Min(0f)] public float frequency { get; set; } = 5f;
-        [field: SerializeField] public float breakForce { get; set; } = float.PositiveInfinity;
+        [field: SerializeField][field: Tooltip("Maximum force the joint can withstand before breaking. Infinity means unbreakable. [0.001, infinity].")][field: Min(0.001f)] public float breakForce { get; set; } = float.PositiveInfinity;
 
         public float dampingRatio
         {

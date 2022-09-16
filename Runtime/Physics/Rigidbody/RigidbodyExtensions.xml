@@ -1,0 +1,16 @@
+﻿<docs>
+    <GetAttachedColliders>
+        <returns>The number of <see cref="Collider"/> placed in the results collection.</returns>
+        <List>
+            <summary>
+                Returns all <see cref="Collider"/> that are attached to this <see cref="Rigidbody"/>.
+            </summary>
+            <param name="results">
+                A collection of <see cref="Collider"/> used to retrieve the results.
+            </param>
+            <returns>
+                A collection of <see cref="Collider"/>.
+            </returns>
+        </List>
+    </GetAttachedColliders>
+</docs>

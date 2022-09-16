@@ -1,0 +1,21 @@
+﻿<docs>
+    <PickUp>
+        <summary>
+            Follow a <see cref="Picker"/> by follow settings.
+        </summary>
+    </PickUp>
+    <Hold>
+        <summary>
+            Be held by a <see cref="Picker"/>.
+        </summary>
+        <param name="picker">The <see cref="Picker"/> to be held by.</param>
+    </Hold>
+    <Drop>
+        <summary>
+            Be dropped by the currently held <see cref="Picker"/>.
+        </summary>
+        <remarks>
+            <seealso cref="holdingPicker"/>.
+        </remarks>
+    </Drop>
+</docs>

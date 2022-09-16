@@ -6,6 +6,7 @@ using static UnityExtras.ExtraMath;
 
 namespace UnityExtras
 {
+    /// <include file='./CharacterMover2D.xml' path='docs/CharacterMover2D/*'/>
     [AddComponentMenu("Physics 2D/Character Mover 2D")]
     [RequireComponent(typeof(CharacterController2D))]
     [DisallowMultipleComponent]
@@ -190,7 +191,9 @@ namespace UnityExtras
         #endregion
 
         #region Movement
+        /// <include file='./CharacterMover2D.xml' path='docs/Move/*'/>
         public void Move(Vector2 movement) => Move(movement, default);
+        /// <include file='./CharacterMover2D.xml' path='docs/Move/*'/>
         public void Move(Vector2 movement, bool sprint)
         {
             // Set target speed based on move speed and
@@ -198,9 +201,12 @@ namespace UnityExtras
             targetMotion += targetSpeed * movement;
         }
 
+        /// <include file='./CharacterMover2D.xml' path='docs/Move/Relative/*'/>
         public void MoveRelative(Vector2 movement) => MoveRelative(movement, default);
+        /// <include file='./CharacterMover2D.xml' path='docs/Move/Relative/*'/>
         public void MoveRelative(Vector2 movement, bool sprint) => Move(Quaternion.Euler(0f, 0f, transform.eulerAngles.z) * movement, sprint);
 
+        /// <include file='./CharacterMover2D.xml' path='docs/Jump/*'/>
         public void Jump()
         {
             TryPrepareGravity();
@@ -225,6 +231,7 @@ namespace UnityExtras
             }
         }
 
+        /// <include file='./CharacterMover2D.xml' path='docs/Turn/*'/>
         public void Turn(bool faceRight)
         {
             var angle = -transform.eulerAngles.y + (faceRight ? 0f : 180f);

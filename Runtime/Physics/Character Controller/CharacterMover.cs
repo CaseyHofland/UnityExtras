@@ -6,6 +6,7 @@ using static UnityExtras.ExtraMath;
 
 namespace UnityExtras
 {
+    /// <include file='./CharacterMover.xml' path='docs/CharacterMover/*'/>
     [AddComponentMenu("Physics/Character Mover")]
     [RequireComponent(typeof(CharacterController))]
     [DisallowMultipleComponent]
@@ -192,17 +193,21 @@ namespace UnityExtras
         #endregion
 
         #region Movement
+        /// <include file='./CharacterMover.xml' path='docs/Move/*'/>
         public void Move(Vector3 movement) => Move(movement, default);
+        /// <include file='./CharacterMover.xml' path='docs/Move/*'/>
         public void Move(Vector3 movement, bool sprint)
         {
-            // Set target speed based on move speed and
             var targetSpeed = moveSpeed + (sprint ? sprintBoost : 0f);
             targetMotion += targetSpeed * movement;
         }
 
+        /// <include file='./CharacterMover.xml' path='docs/Move/Relative/*'/>
         public void MoveRelative(Vector3 movement) => MoveRelative(movement, default);
+        /// <include file='./CharacterMover.xml' path='docs/Move/Relative/*'/>
         public void MoveRelative(Vector3 movement, bool sprint) => Move(transform.rotation * movement, sprint);
 
+        /// <include file='./CharacterMover.xml' path='docs/Jump/*'/>
         public void Jump()
         {
             TryPrepareGravity();
@@ -227,12 +232,10 @@ namespace UnityExtras
             }
         }
 
+        /// <include file='./CharacterMover.xml' path='docs/Turn/*'/>
         public void Turn(float turnFactor) => Turn(Vector3.up, turnFactor);
-        public void Turn(Vector3 axis, float turnFactor)
-        {
-            // Rotate the player around the axis (left and right by default).
-            transform.Rotate(axis, turnFactor * rotationSpeed * Time.deltaTime, Space.Self);
-        }
+        /// <include file='./CharacterMover.xml' path='docs/Turn/*'/>
+        public void Turn(Vector3 axis, float turnFactor) => transform.Rotate(axis, turnFactor * rotationSpeed * Time.deltaTime, Space.Self);
         #endregion
     }
 }

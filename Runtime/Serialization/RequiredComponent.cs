@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace UnityExtras
 {
+    /// <summary>Wrapper for ensuring <typeparamref name="T"/> will be added to a <see cref="GameObject"/> as a dependency. May be used for <see cref="Component"/> of which multiple may be present on the same <see cref="GameObject"/>.</summary>
     [Serializable]
     public struct RequiredComponent<T> 
         where T : Component

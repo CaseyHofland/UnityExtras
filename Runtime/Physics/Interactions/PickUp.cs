@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace UnityExtras
 {
+    /// <include file='./PickUp.xml' path='docs/PickUp/*'/>
     [RequireComponent(typeof(Rigidbody))]
     [DisallowMultipleComponent]
     public class PickUp : MonoBehaviour
@@ -18,24 +19,24 @@ namespace UnityExtras
             [field: SerializeField][field: Min(0f)] public float maxForce { get; set; } = float.PositiveInfinity;
             [field: SerializeField][field: Range(0f, 1f)] public float dampingRatio { get; set; } = 1f;
             [field: SerializeField][field: Min(0f)] public float frequency { get; set; } = 5f;
-            [field: SerializeField][field: Min(0f)] public float breakForce { get; set; } = float.PositiveInfinity;
+            [field: SerializeField][field: Tooltip("Maximum force the joint can withstand before breaking. Infinity means unbreakable. [0.001, infinity].")][field: Min(0f)] public float breakForce { get; set; } = float.PositiveInfinity;
         }
 
 
         [field: Header("Follow Settings")]
-        [field: SerializeField] public Vector3 followCenter { get; set; } = Vector3.forward * 3f;
-        [field: SerializeField] public Quaternion followRotation { get; set; } = Quaternion.identity;
-        [field: SerializeField] public bool usePickUpRotation { get; set; }
-        [field: SerializeField][field: Range(0f, 1f)] public float followUpwards { get; set; } = 0f;
+        [field: SerializeField][field: Tooltip("The position to follow relative to the Picker holding this PickUp.")] public Vector3 followCenter { get; set; } = Vector3.forward * 3f;
+        [field: SerializeField][field: Tooltip("The rotation to follow when held.")] public Quaternion followRotation { get; set; } = Quaternion.identity;
+        [field: SerializeField][field: Tooltip("If the follow rotation should be set based on the PickUp rotation when first held.")] public bool usePickUpRotation { get; set; }
+        [field: SerializeField][field: Tooltip("If the follow rotation should factor in the Pickers pitch (x rotation). 0 will always keep the PickUp level, 1 will always point towards the Picker exactly the same no matter of pitch.")][field: Range(0f, 1f)] public float followUpwards { get; set; } = 0f;
 
         [field: Header("Release Settings")]
-        [field: SerializeField] public float maxReleaseForce { get; set; } = float.PositiveInfinity;
-        [field: SerializeField] public float maxReleaseTorque { get; set; } = float.PositiveInfinity;
+        [field: SerializeField][field: Tooltip("Maximum force the PickUp may have when released.")][field: Min(0f)] public float maxReleaseForce { get; set; } = float.PositiveInfinity;
+        [field: SerializeField][field: Tooltip("Maximum torque the PickUp may have when released.")][field: Min(0f)] public float maxReleaseTorque { get; set; } = float.PositiveInfinity;
 
         [field: Header("Physics Settings")]
-        [field: SerializeField] public TargetSettings targetSettings { get; set; } = new TargetSettings();
-        [field: SerializeField] public TargetSettings gyroSettings { get; set; } = new TargetSettings();
-        [field: SerializeField] public RigidbodySettings rigidbodySettings { get; set; } = new RigidbodySettings();
+        [field: SerializeField][field: Tooltip("Settings for the underlying TargetJoint.")] public TargetSettings targetSettings { get; set; } = new();
+        [field: SerializeField][field: Tooltip("Settings for the underlying GyroJoint.")] public TargetSettings gyroSettings { get; set; } = new();
+        [field: SerializeField][field: Tooltip("Settings for how to manipulate the Rigidbody on held.")] public RigidbodySettings rigidbodySettings { get; set; } = new();
 
         public enum StoreMethod
         {
@@ -117,10 +118,12 @@ namespace UnityExtras
         }
 
         [field: Header("Break Settings")]
-        [field: SerializeField] public float breakDistance { get; set; } = 8f;
-        [field: SerializeField] public LayerMask breakLayers { get; set; }
+        [field: SerializeField][field: Tooltip("Maximum distance the PickUp may have before breaking.")][field: Min(0f)] public float breakDistance { get; set; } = 8f;
+        [field: SerializeField][field: Tooltip("Obstruction layers that break the PickUp when obstructing the PickUp and Picker.")] public LayerMask breakLayers { get; set; }
 
+        /// <summary>The <see cref="Picker"/> that is currently holding this <see cref="PickUp"/>, or <see langword="null"/> otherwise.</summary>
         public Picker? holdingPicker { get; private set; }
+        
         private TargetJoint? targetJoint;
         private GyroJoint? gyroJoint;
 
@@ -167,7 +170,7 @@ namespace UnityExtras
                 gyroJoint.frequency = gyroSettings.frequency;
                 gyroJoint.breakTorque = gyroSettings.breakForce;
 
-                // Set targets.
+                // Set position target.
                 if (Physics.Raycast(holdingPicker.transform.position, holdingPicker.transform.forward, out var hit, followCenter.magnitude, ExtraPhysics.GetLayerCollisionMask(gameObject.layer), QueryTriggerInteraction.Ignore))
                 {
                     targetJoint.target = hit.point;
@@ -177,6 +180,7 @@ namespace UnityExtras
                     targetJoint.target = holdingPicker.transform.position + holdingPicker.transform.rotation * followCenter;
                 }
 
+                // Set gyro target.
                 var forward = holdingPicker.transform.forward;
                 forward.y *= followUpwards;
                 forward.Normalize();
@@ -190,6 +194,7 @@ namespace UnityExtras
             rigidbody.detectCollisions = tmp;
         }
 
+        /// <include file='./PickUp.xml' path='docs/Hold/*'/>
         public void Hold(Picker picker)
         {
             if (holdingPicker == picker || !enabled)
@@ -199,6 +204,7 @@ namespace UnityExtras
 
             Drop();
 
+            // Add a TargetJoint and GyroJoint to be used by PickUp for following the Picker.
             targetJoint = gameObject.AddComponent<TargetJoint>();
             gyroJoint = gameObject.AddComponent<GyroJoint>();
             targetJoint.hideFlags = gyroJoint.hideFlags = HideFlags.HideInInspector;
@@ -215,6 +221,7 @@ namespace UnityExtras
             picker.Hold(this);
         }
 
+        /// <include file='./PickUp.xml' path='docs/Drop/*'/>
         public void Drop()
         {
             var tmp = holdingPicker;
@@ -227,11 +234,13 @@ namespace UnityExtras
 
                 rigidbodySettings.Restore(rigidbody);
 
+                // Adjust the velocity for maxReleaseForce.
                 if (rigidbody.velocity.sqrMagnitude > maxReleaseForce * maxReleaseForce)
                 {
                     rigidbody.velocity *= maxReleaseForce / rigidbody.velocity.magnitude;
                 }
 
+                // Adjust the torque for maxReleaseTorque.
                 if (rigidbody.angularVelocity.sqrMagnitude > maxReleaseTorque * maxReleaseTorque)
                 {
                     rigidbody.angularVelocity *= maxReleaseTorque / rigidbody.angularVelocity.magnitude;

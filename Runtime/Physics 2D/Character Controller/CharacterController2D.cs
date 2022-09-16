@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace UnityExtras
 {
+    /// <summary>A <see cref="CharacterController2D"/> allows you to easily do 2D movement constrained by collisions without having to deal with a <see cref="Rigidbody2D"/>.</summary>
     [AddComponentMenu("Physics 2D/Character Controller 2D")]
     [DisallowMultipleComponent]
     public class CharacterController2D : MonoBehaviour, IAuthor
@@ -12,49 +13,62 @@ namespace UnityExtras
 
         public static implicit operator CapsuleCollider2D(CharacterController2D characterController2D) => characterController2D.capsuleCollider2D;
 
-        [SerializeField] private float _slopeLimit = 45f;
+        [SerializeField][Tooltip("The character controller2Ds slope limit in degrees.")] private float _slopeLimit = 45f;
+        /// <summary>The character controller2Ds slope limit in degrees.</summary>
         public float slopeLimit
         {
             get => _slopeLimit;
             set => _slopeLimit = Mathf.Clamp(value, 0f, 180f);
         }
 
-        [field: SerializeField][field: Min(0f)] public float stepOffset { get; set; } = 0.3f;
-        [field: SerializeField][field: Min(0.0001f)] public float skinWidth { get; set; } = 0.08f;
-        [field: SerializeField][field: Min(0f)] public float minMoveDistance { get; set; } = 0.001f;
+        [field: SerializeField][field: Tooltip("The character controller2Ds step offset in meters.")][field: Min(0f)] public float stepOffset { get; set; } = 0.3f;
+        [field: SerializeField][field: Tooltip("The character's collision skin width.")][field: Min(0.0001f)] public float skinWidth { get; set; } = 0.08f;
+        [field: SerializeField][field: Tooltip("Gets or sets the minimum move distance of the character controller2D.")][field: Min(0f)] public float minMoveDistance { get; set; } = 0.001f;
         
-        [SerializeField] private Vector2 _center;
+        [SerializeField][Tooltip("The center of the character's capsule relative to the transform's position.")] private Vector2 _center;
+        /// <summary>The center of the character's capsule relative to the transform's position.</summary>
         public Vector2 center
         {
             get => capsuleCollider2D.offset;
             set => capsuleCollider2D.offset = _center = value;
         }
         
-        [SerializeField][Min(0f)] private float _radius = 0.5f;
+        [SerializeField][Tooltip("The radius of the character's capsule.")][Min(0f)] private float _radius = 0.5f;
+        /// <summary>The radius of the character's capsule.</summary>
         public float radius
         {
             get => capsuleCollider2D.size.x * 0.5f;
             set => capsuleCollider2D.size = new Vector2((_radius = value) * 2f, capsuleCollider2D.size.y);
         }
 
-        [SerializeField][Min(0f)] private float _height = 2f;
+        [SerializeField][Tooltip("The height of the character's capsule.")][Min(0f)] private float _height = 2f;
+        /// <summary>The height of the character's capsule.</summary>
         public float height
         {
             get => capsuleCollider2D.size.y;
             set => capsuleCollider2D.size = new Vector2(capsuleCollider2D.size.x, _height = value);
         }
 
+        /// <summary>What part(s) of the capsule collided with the environment during the last <see cref="Move"/> call.</summary>
         public CollisionFlags collisionFlags { get; private set; }
+
         private bool _detectCollisions = true;
+        /// <summary>Determines whether other <see cref="Rigidbody2D"/> or <see cref="CharacterController2D"/> collide with this <see cref="CharacterController2D"/> (by default this is always enabled).</summary>
         public bool detectCollisions
         {
             get => _detectCollisions;
             set => capsuleCollider2D.enabled = (_detectCollisions = value) && enabled;
         }
+
+        /// <summary>Was the <see cref="CharacterController2D"/> touching the ground during the last move?</summary>
         public bool isGrounded => collisionFlags.HasFlag(CollisionFlags.Below);
+
+        /// <summary>The current relative velocity of the character.</summary>
         public Vector2 velocity { get; private set; }
-        //public bool enableOverlapRecovery { get; set; } = true;
+
+        // public bool enableOverlapRecovery { get; set; } = true;
         private bool _enableOverlapRecovery = true;
+        /// <summary>Enables or disables overlap recovery. Used to depenetrate <see cref="CharacterController2D"/> from static objects when an overlap is detected.</summary>
         public bool enableOverlapRecovery
         {
             get => _enableOverlapRecovery;
@@ -192,7 +206,10 @@ namespace UnityExtras
             return hasHit;
         }
 
+
+        /// <summary>Supplies the movement of a <see cref="GameObject"/> with an attached <see cref="CharacterController2D"/> component.</summary>
         public CollisionFlags Move(Vector2 motion) => Move(motion, Vector2.right, Vector2.up, Space.World);
+        /// <summary>Supplies the movement of a <see cref="GameObject"/> with an attached <see cref="CharacterController2D"/> component relative to its orientation.</summary>
         public CollisionFlags RelativeMove(Vector2 motion) => Move(motion, ((Vector2)transform.right).normalized, ((Vector2)transform.up).normalized, Space.Self);
 
         private CollisionFlags Move(Vector2 motion, Vector2 right, Vector2 up, Space translationSpace)
@@ -327,6 +344,7 @@ namespace UnityExtras
             }
         }
 
+        /// <summary>Moves the character with speed.</summary>
         public bool SimpleMove(Vector2 speed) => Move((speed + Physics2D.gravity) * Time.deltaTime).HasFlag(CollisionFlags.Below);
         #endregion
     }

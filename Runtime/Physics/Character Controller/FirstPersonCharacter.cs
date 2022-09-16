@@ -5,6 +5,7 @@ using UnityExtras.InputSystem;
 
 namespace UnityExtras
 {
+    /// <summary>Handle first person character movement through input.</summary>
     [AddComponentMenu("Physics/First Person Character")]
     [RequireComponent(typeof(CharacterMover))]
     [DisallowMultipleComponent]
@@ -17,11 +18,13 @@ namespace UnityExtras
 
         [field: Header("Look")]
         [field: SerializeField] public Transform? lookTransform { get; set; }
-        [field: SerializeField][field: Tooltip("How far in degrees can you move the camera up")][field: Min(0f)] public float topClamp { get; set; } = 89.9f;
-        [field: SerializeField][field: Tooltip("How far in degrees can you move the camera down")][field: Min(0f)] public float bottomClamp { get; set; } = 89.9f;
+        [field: SerializeField][field: Tooltip("How far in degrees the look transform may look up")][field: Min(0f)] public float topClamp { get; set; } = 90f;
+        [field: SerializeField][field: Tooltip("How far in degrees the look transform may look down")][field: Min(0f)] public float bottomClamp { get; set; } = 90f;
 
         private float _lookPitch;
 
+        /// <summary>Turn the characters looking direction by a given movement.</summary>
+        /// <param name="movement">The movement to apply to the looking direction. <see cref="Vector2.x">x</see> is used to turn the whole character, <see cref="Vector2.y">y</see> is only applied to the characters <see cref="lookTransform">look transform</see>.</param>
         public void Look(Vector2 movement)
         {
             var turnFactor = movement.x;

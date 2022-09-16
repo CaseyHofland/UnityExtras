@@ -5,6 +5,7 @@ using UnityExtras.InputSystem;
 
 namespace UnityExtras
 {
+    /// <summary>Handle third person character 2D movement through input.</summary>
     [AddComponentMenu("Physics 2D/Third Person Character 2D")]
     [RequireComponent(typeof(CharacterMover2D))]
     [DisallowMultipleComponent]

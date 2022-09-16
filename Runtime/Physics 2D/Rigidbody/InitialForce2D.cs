@@ -10,9 +10,9 @@ namespace UnityExtras
         private Rigidbody2D? _rigidbody2D;
         public new Rigidbody2D rigidbody2D => _rigidbody2D ? _rigidbody2D! : (_rigidbody2D = GetComponent<Rigidbody2D>());
 
-        [field: SerializeField] public Vector2 force { get; set; }
-        [field: SerializeField] public Vector2 relativeForce { get; set; }
-        [field: SerializeField] public float torque { get; set; }
+        [field: SerializeField][field: Tooltip("The force to apply globally.")] public Vector2 force { get; set; }
+        [field: SerializeField][field: Tooltip("The force to apply locally.")] public Vector2 relativeForce { get; set; }
+        [field: SerializeField][field: Tooltip("The torque to apply.")] public float torque { get; set; }
 
         private void Start()
         {
