@@ -3,8 +3,6 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityExtras.InputSystem;
 
-using Input = UnityExtras.InputSystem.Input;
-
 namespace UnityExtras
 {
     [AddComponentMenu("Physics/First Person Character")]
@@ -40,41 +38,73 @@ namespace UnityExtras
 
         #region Input
         [field: Header("Input")]
-        [field: SerializeField] public Input moveInput { get; set; }
-        [field: SerializeField] public Input lookInput { get; set; }
-        [field: SerializeField] public Input sprintInput { get; set; }
-        [field: SerializeField] public Input jumpInput { get; set; }
+        [field: SerializeField] public InputReaction moveReaction { get; set; }
+        [field: SerializeField] public InputReaction lookReaction { get; set; }
+        [field: SerializeField] public InputReaction sprintReaction { get; set; }
+        [field: SerializeField] public InputReaction jumpReaction { get; set; }
+
+        [field: SerializeField] [field: Min(0f)] public float jumpHoldTime { get; set; }
+        private float _jumpHoldTime;
 
         private void OnEnable()
         {
-            moveInput.action?.AddContinuousActions(MovePerformed);
-            lookInput.action?.AddContinuousActions(LookPerformed);
-            jumpInput.action?.AddContinuousActions(JumpPerformed);
-            sprintInput.action?.AddContinuousActions();
+            if (moveReaction.reaction != null)
+            {
+                moveReaction.reaction.performed += MovePerformed;
+            }
+            if (lookReaction.reaction != null)
+            {
+                lookReaction.reaction.performed += LookPerformed;
+            }
+            if (jumpReaction.reaction != null)
+            {
+                jumpReaction.reaction.performed += JumpPerformed;
+            }
         }
 
         private void OnDisable()
         {
-            moveInput.action?.RemoveContinuousActions(MovePerformed);
-            lookInput.action?.RemoveContinuousActions(LookPerformed);
-            jumpInput.action?.RemoveContinuousActions(JumpPerformed);
-            sprintInput.action?.RemoveContinuousActions();
+            if (moveReaction.reaction != null)
+            {
+                moveReaction.reaction.performed -= MovePerformed;
+            }
+            if (lookReaction.reaction != null)
+            {
+                lookReaction.reaction.performed -= LookPerformed;
+            }
+            if (jumpReaction.reaction != null)
+            {
+                jumpReaction.reaction.performed -= JumpPerformed;
+            }
+        }
+
+        private void Update()
+        {
+            _jumpHoldTime -= Time.deltaTime;
+            if (_jumpHoldTime <= 0f && jumpReaction.reaction != null)
+            {
+                jumpReaction.reaction.isPerformed = false;
+            }
         }
 
         private void MovePerformed(InputAction.CallbackContext context)
         {
-            var direction2D = context.ReadValue<Vector2>();
+            var direction2D = context.ReadRevalue<Vector2>();
             var direction = new Vector3(direction2D.x, 0f, direction2D.y);
-            characterMover.MoveRelative(direction, sprintInput.action?.IsContinuousPerformed() ?? false);
+            characterMover.MoveRelative(direction, sprintReaction.reaction ?? false);
         }
 
         private void LookPerformed(InputAction.CallbackContext context)
         {
-            Look(context.ReadValue<Vector2>());
+            Look(context.ReadRevalue<Vector2>());
         }
 
         private void JumpPerformed(InputAction.CallbackContext context)
         {
+            if (_jumpHoldTime <= 0f)
+            {
+                _jumpHoldTime = jumpHoldTime;
+            }
             characterMover.Jump();
         }
         #endregion

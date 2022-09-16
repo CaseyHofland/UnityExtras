@@ -1,4 +1,6 @@
 #nullable enable
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
@@ -6,8 +8,59 @@ using UnityEngine;
 
 namespace UnityExtras.Editor
 {
-    public static class SerializedPropertyExtensions
+	public static class SerializedPropertyExtensions
 	{
+		public static SerializedProperty FindAutoPropertyRelative(this SerializedProperty serializedProperty, string relativePropertyPath) => serializedProperty.FindPropertyRelative($"<{relativePropertyPath}>k__BackingField");
+
+		[Obsolete("This method does not take into account properties nested in arrays and should be used with caution!", false)]
+		public static FieldInfo GetField(this SerializedProperty property, out object target)
+		{
+			const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+            var paths = property.propertyPath.Split('.');
+
+			target = property.serializedObject.targetObject;
+			FieldInfo field = target.GetType().GetField(paths[0], flags);
+			for (int i = 1; i < paths.Length; i++)
+			{
+                var child = field.GetValue(target);
+                if (child is IList)
+                {
+                    return field;
+                }
+
+				target = child;
+                field = field.FieldType.GetField(paths[i], flags);
+			}
+
+			return field;
+		}
+
+		[Obsolete("This method does not take into account properties nested in arrays and should be used with caution!", false)]
+		public static T GetValue<T>(this SerializedProperty property) => (T)property.GetField(out var target).GetValue(target);
+
+		//public static void SetValue(this SerializedProperty property, object value)
+		//{
+		//	const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
+		//	var paths = property.propertyPath.Split('.');
+		//	int index = 0;
+
+		//	SetValueRecursive(property.serializedObject.targetObject);
+
+		//	void SetValueRecursive(object target)
+		//	{
+		//		var field = target.GetType().GetField(paths[index++], flags);
+		//		if (index >= paths.Length)
+		//		{
+		//			field.SetValue(target, value);
+		//			return;
+		//		}
+
+		//              var child = field.GetValue(target);
+		//              SetValueRecursive(child);
+		//              field.SetValue(target, child);
+		//	}
+		//}
+
 		public static string GetSanitizedPropertyPath(this SerializedProperty serializedProperty)
 		{
 			return serializedProperty.propertyPath.Replace(".Array.data[", "[");

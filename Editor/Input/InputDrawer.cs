@@ -25,7 +25,7 @@ namespace UnityExtras.InputSystem.Editor
             // Draw the enable on construction toggle.
             var enableOnStartPosition = new Rect(position);
             enableOnStartPosition.x += EditorGUIUtility.labelWidth - EditorGUI.indentLevel * 18f;
-            enableOnStartPosition.width = 96f;
+            enableOnStartPosition.width = 96f + EditorGUI.indentLevel * 18f;
             enableOnStartPosition.height = EditorGUIUtility.singleLineHeight;
 
             var defaultEnabledLabel = new GUIContent(enableOnStartProperty.displayName, "Should the action be enabled on start?");
