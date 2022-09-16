@@ -14,9 +14,8 @@ namespace UnityExtras.InputSystem
 
         private bool _started;
 
-        public void OnBeforeSerialize() { }
-
-        public void OnAfterDeserialize()
+        void ISerializationCallbackReceiver.OnBeforeSerialize() { }
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
         {
             if (enableOnStart && !_started)
             {

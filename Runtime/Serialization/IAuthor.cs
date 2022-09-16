@@ -65,10 +65,14 @@ namespace UnityExtras
             isDeserializing = true;
             UnityEditor.EditorApplication.delayCall += () =>
             {
-                if (gameObject)
+                try
                 {
-                    Deserialize();
+                    if (gameObject)
+                    {
+                        Deserialize();
+                    }
                 }
+                catch (MissingReferenceException) { }
 
                 isDeserializing = false;
             };

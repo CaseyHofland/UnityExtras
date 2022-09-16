@@ -23,12 +23,12 @@ namespace UnityExtras
             set => configurableJoint.connectedBody = _connectedBody = value;
         }
 
-        //[SerializeField] private ArticulationBody? _connectedArticulationBody;
-        //public ArticulationBody? connectedArticulationBody
-        //{
-        //    get => configurableJoint.connectedArticulationBody;
-        //    set => configurableJoint.connectedArticulationBody = _connectedArticulationBody = value;
-        //}
+        [SerializeField] private ArticulationBody? _connectedArticulationBody;
+        public ArticulationBody? connectedArticulationBody
+        {
+            get => configurableJoint.connectedArticulationBody;
+            set => configurableJoint.connectedArticulationBody = _connectedArticulationBody = value;
+        }
 
         [SerializeField] private Vector3 _anchor;
         public Vector3 anchor
@@ -47,7 +47,14 @@ namespace UnityExtras
         [SerializeField] private Quaternion _angle;
         public Quaternion angle
         {
-            get => rigidbody.rotation * Quaternion.LookRotation(Vector3.Cross(configurableJoint.axis, configurableJoint.secondaryAxis), configurableJoint.secondaryAxis);
+            get
+            {
+                var forward = Vector3.Cross(configurableJoint.axis, configurableJoint.secondaryAxis);
+                var a = rigidbody.rotation * forward != Vector3.zero 
+                    ? Quaternion.LookRotation(forward, configurableJoint.secondaryAxis)
+                    : Quaternion.identity;
+                return a == _angle ? _angle : a;
+            }
             set
             {
                 var a = Quaternion.Inverse(rigidbody.rotation) * (_angle = value);
@@ -195,7 +202,7 @@ namespace UnityExtras
         public void AutoConfigureAngle()
         {
             var anchorPosition = transform.TransformPoint(anchor);
-            var connectedAnchorPosition = connectedBody?.transform.TransformPoint(connectedAnchor) ?? connectedAnchor;
+            var connectedAnchorPosition = connectedBody != null ? connectedBody.transform.TransformPoint(connectedAnchor) : connectedAnchor;
 
             angle = Quaternion.Inverse(transform.rotation) * (Quaternion.LookRotation(anchorPosition - connectedAnchorPosition) * Quaternion.FromToRotation(Vector3.right, Vector3.forward));
         }
@@ -242,6 +249,8 @@ namespace UnityExtras
 
         void IAuthor.Serialize()
         {
+            enabled = true;
+
             configurableJoint.autoConfigureConnectedAnchor = false;
             configurableJoint.yMotion = configurableJoint.zMotion = configurableJoint.angularYMotion = configurableJoint.angularZMotion = ConfigurableJointMotion.Locked;
 
@@ -257,7 +266,7 @@ namespace UnityExtras
             contactDistance = contactDistance;
 
             connectedBody = connectedBody;
-            //connectedArticulationBody = connectedArticulationBody;
+            connectedArticulationBody = connectedArticulationBody;
             breakForce = breakForce;
             breakTorque = breakTorque;
             enableCollision = enableCollision;
@@ -280,7 +289,7 @@ namespace UnityExtras
             contactDistance = _limits.contactDistance;
 
             connectedBody = _connectedBody;
-            //connectedArticulationBody = _connectedArticulationBody;
+            connectedArticulationBody = _connectedArticulationBody;
             breakForce = _breakForce;
             breakTorque = _breakTorque;
             enableCollision = _enableCollision;

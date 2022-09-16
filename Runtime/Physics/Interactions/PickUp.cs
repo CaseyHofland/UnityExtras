@@ -46,6 +46,7 @@ namespace UnityExtras
 
         [Serializable]
         public class Store<T>
+            where T : struct
         {
             [field: SerializeField] public T value { get; set; }
             [field: SerializeField] public StoreMethod storeMethod { get; set; }
