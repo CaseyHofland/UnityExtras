@@ -1,0 +1,27 @@
+﻿<docs>
+    <CharacterMoverBase>
+        <summary>
+            Easily move a character through simple methods.
+        </summary>
+    </CharacterMoverBase>
+    <Move>
+        <summary>
+            Move the character by a given movement. Note that the movement is multiplied by the characters <see cref="moveSpeed">move speed</see>.
+        </summary>
+        <param name="movement">The movement vector. May be left unnormalized for speeding up or slowing down the character externally.</param>
+        <param name="sprint">
+            If the characters <see cref="sprintBoost">sprint boost</see> should be added on top of the <see cref="moveSpeed">move speed</see>.
+        </param>
+    </Move>
+    <Jump>
+        <remarks>
+            <see cref="ForcedJump"/> will always trigger a jump, regardless if the character is grounded or otherwise allowed to jump.
+        </remarks>
+        <Base>
+            <summary>
+                Make the character jump a certain height (<see cref="jumpHeight">jumpHeight</see> by default). If <see cref="Jump"/> is not called every frame after then the character goes into fast fall.
+            </summary>
+            <param name="jumpHeight">The height to jump.</param>
+        </Base>
+    </Jump>
+</docs>

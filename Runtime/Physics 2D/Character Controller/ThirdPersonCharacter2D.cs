@@ -22,8 +22,8 @@ namespace UnityExtras
         [field: SerializeField] public InputReaction sprintReaction { get; set; }
         [field: SerializeField] public InputReaction jumpReaction { get; set; }
 
-        [field: SerializeField][field: Min(0f)] public float jumpHoldTime { get; set; }
-        private float _jumpHoldTime;
+        private const float jumpHoldTime = 0.8f;
+        private float _currentJumpHoldTime = jumpHoldTime;
 
         private void OnEnable()
         {
@@ -31,9 +31,10 @@ namespace UnityExtras
             {
                 moveReaction.reaction.performed += MovePerformed;
             }
-            if (jumpReaction.reaction != null)
+            if (jumpReaction.reaction != null && jumpReaction.input.action != null)
             {
                 jumpReaction.reaction.performed += JumpPerformed;
+                jumpReaction.input.action.canceled += JumpCanceled;
             }
         }
 
@@ -43,18 +44,10 @@ namespace UnityExtras
             {
                 moveReaction.reaction.performed -= MovePerformed;
             }
-            if (jumpReaction.reaction != null)
+            if (jumpReaction.reaction != null && jumpReaction.input.action != null)
             {
                 jumpReaction.reaction.performed -= JumpPerformed;
-            }
-        }
-
-        private void Update()
-        {
-            _jumpHoldTime -= Time.deltaTime;
-            if (_jumpHoldTime <= 0f && jumpReaction.reaction != null)
-            {
-                jumpReaction.reaction.isPerformed = false;
+                jumpReaction.input.action.canceled -= JumpCanceled;
             }
         }
 
@@ -68,11 +61,24 @@ namespace UnityExtras
 
         private void JumpPerformed(InputAction.CallbackContext context)
         {
-            if (_jumpHoldTime <= 0f)
-            {
-                _jumpHoldTime = jumpHoldTime;
-            }
             characterMover2D.Jump();
+            if (!characterMover2D.allowPerpetualJump)
+            {
+                _currentJumpHoldTime -= Time.deltaTime;
+                if (_currentJumpHoldTime <= 0f)
+                {
+                    jumpReaction.reaction!.isPerformed = false;
+                    _currentJumpHoldTime = jumpHoldTime + characterMover2D.jumpBuffer;
+                }
+            }
+        }
+
+        private void JumpCanceled(InputAction.CallbackContext context)
+        {
+            if (!jumpReaction.reaction!.isPerformed)
+            {
+                _currentJumpHoldTime = jumpHoldTime + characterMover2D.jumpBuffer;
+            }
         }
         #endregion
     }

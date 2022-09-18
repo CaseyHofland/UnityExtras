@@ -4,17 +4,6 @@
             Easily move a <see cref="CharacterController2D"/> through simple methods.
         </summary>
     </CharacterMover2D>
-    <Move>
-        <summary>Move the character by a given movement. Note that the movement is multiplied by the characters <see cref="moveSpeed">move speed</see>.</summary>
-        <Relative>
-            <summary>Move the character by a given movement relative to its direction. Note that the movement is multiplied by the characters <see cref="moveSpeed">move speed</see>.</summary>
-            <param name="movement">The movement vector. May be left unnormalized for speeding up or slowing down the character externally.</param>
-            <param name="sprint">If the characters <see cref="sprintBoost">sprint boost</see> should be added on top of the <see cref="moveSpeed">move speed</see>.</param>
-        </Relative>
-    </Move>
-    <Jump>
-        <summary>Make the character jump based on its <see cref="jumpHeight">jump height</see>. If <see cref="Jump"/> is not called every frame after then the character goes into fast fall.</summary>
-    </Jump>
     <Turn>
         <summary>Rotate the character to face either left or right.</summary>
         <param name="faceRight">If the character should face right. Faces left otherwise.</param>
