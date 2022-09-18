@@ -181,14 +181,9 @@ namespace UnityExtras
                 }
 
                 // Set gyro target.
-                var forward = holdingPicker.transform.forward;
-                forward.y *= followUpwards;
-                forward.Normalize();
-                if (forward == Vector3.zero)
-                {
-                    forward = Vector3.forward;
-                }
-                gyroJoint.target = Quaternion.LookRotation(forward) * followRotation;
+                var gyroTargetEuler = holdingPicker.transform.eulerAngles;
+                gyroTargetEuler.x *= followUpwards;
+                gyroJoint.target = Quaternion.Euler(gyroTargetEuler);
             }
 
             rigidbody.detectCollisions = tmp;
