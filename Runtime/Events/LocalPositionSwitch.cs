@@ -6,7 +6,7 @@ namespace UnityExtras
     public class LocalPositionSwitch : Switch
     {
         [field: SerializeField][field: Tooltip("Meets the condition when the local position equals the target.")] public Vector3 targetLocalPosition;
-        [field: SerializeField][field: Tooltip("A safety margin for meeting the target.")][field: Min(0f)] public float safetyMargin = 0.05f;
+        [field: SerializeField][field: Tooltip("A safety margin for meeting the target.")][field: Min(0f)] public float safetyMargin = Vector3.kEpsilon;
 
         protected override bool Condition()
         {
