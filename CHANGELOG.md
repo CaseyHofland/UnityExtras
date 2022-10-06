@@ -4,6 +4,41 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2022-10-06
+### Added
+- Add a Reset item to the contextual property menu. This allows you to reset properties by right-clicking and selecting "Reset".
+- Add an Object Picker to the Object Drawer. Object Drawers now contain a button that, when selected, allow you to click an object in the scene in order to select is for the object field.
+- Add null checks to the FirstPersonCharacter and ThirdPersonCharacter2D.
+- Add null check in DestroySafe.
+- Add DestroyImmediateSafe to ExtraObject methods.
+- Add Layer struct. Layer can be used in much the same way you would use LayerMask. The difference is that Layer only allows the selection of a single layer, and its value represents an index. This means that Layer.value might be 8 where LayerMask.value would be 256 (1 << 8).
+- Add a RequiredComponent.GetComponent(GameObject, HideFlags) override. This allows to assign HideFlags on object creation. Useful for setting the HideFlags to HideFlags.HideInInspector on creation, a common use case.
+- Add low hanging fruit MethodImpl(MethodImplOptions.AggressiveInlining) attribute to ExtraMath operations.
+- Add IAuthor, an interface that, together with RequiredComponent<T>, provides an effective way to Author components from your custom scripts. CharacterController2D and SliderJoint implement this to cleanly Author a CapsuleCollider2D and ConfigurableJoint respectively. It is crucial that IAuthor be implemented properly, thus a code example has been provided in the comments of IAuthor (that is, the box you see when hovering over it in your favorite compiler). Use this as a starting point when in doubt about its proper implementation.
+- Add InputReaction, a format in which you may assign an Input, Processors and a ReactionMethod in order to work with input safely and efficiently.
+- Add utility script for finding missing scripts in a scene. Can be found under "Window/Find Missing Scripts".
+- Add a LocalPositionSwitch. Switch is an abstract class that will trigger UnityEvents when the switch is turned on or off based on a condition. LocalPositionSwitch is a switch that triggers when an object reaches a target local position. This format allows for quickly setting up gameplay through UnityEvent, and to easily add more switches by inheriting from Switch.
+- Add UnityMember and ValueRef<>. Unity Member is a serializable MemberInfo. It is modelled after UnityEvent and amazingly powerful for linking values in-editor. ValueRef<> is a wrapper for UnityMember to allow for links between value references, meaning fields and read-writeable properties. This can be used in an inspector that needs to manipulate some kind of value, but doesn't know up front what value that is going to be.
+- Add UnityListDefaultsAttribute. Serialized lists in Unity don't reset new classes to their defaults, which causes issues for UnityMember. By decorating a serialized list with the UnityListDefaultsAttribute, this behavior is fixed.
+- Add Picker2D and PickUp2D for picking up objects in 2D.
+- Add ValueStore<>, a wrapper that allows for a value to be stored and replaced temporarily. This is useful in PickUp as you want a rigidbody to have different settings during its PickUp state (e.g. gravity = false) but reset this value once you get out of this state.
+
+### Changed
+- Update minimum Unity version to 2021.3.
+- UnityExtras.OnEvent has been renamed to UnityExtras.Events.MonoEvent. It functions the same.
+
+### Removed
+- Remove ExtraMath.InverseSafe. Use `math.select(math.rcp(myFloat), 0f, myFloat == 0f);` instead.
+
+### Fixed
+- Fix Line Endings in ContinuousInteraction.
+- The rigidbody context menu "Use 2D Drag" didn't correctly change the angular drag. This has been fixed. Additionally, the operation is recorded on the Undo stack.
+- Fix for DestroySafe failing inside the editor when the application is quitting.
+- SliderJointEditor had an incorrect handle size gizmo.
+- SliderJoint would log forward being zero upon conversion: now a check is in place to make sure forward is not zero.
+- Add Vector3.zero check before calling Quaternion.LookRotation in CharacterController2D.
+- Fix PickUp gyroTarget edge case. When the Pickers forward rotation was equal to Vector3.up and the PickUp.followUpwards was set to 0, the gyro target would incorrectly be set to Quaternion.identity. This has been fixed and now the PickUp will follow the same y rotation as the Picker.
+
 ## [1.0.0] - 2022-05-20
 ### Added
 - InputSystem 1.3.0 as a dependancy.
