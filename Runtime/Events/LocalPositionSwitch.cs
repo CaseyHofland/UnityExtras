@@ -1,7 +1,7 @@
 #nullable enable
 using UnityEngine;
 
-namespace UnityExtras
+namespace UnityExtras.Events
 {
     public class LocalPositionSwitch : Switch
     {

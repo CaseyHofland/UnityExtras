@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace UnityExtras
+namespace UnityExtras.Events
 {
     /// <summary>Call <see cref="UnityEvent"/> based on a condition.</summary>
     public abstract class Switch : MonoBehaviour

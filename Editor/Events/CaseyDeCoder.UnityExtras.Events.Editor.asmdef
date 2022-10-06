@@ -1,0 +1,20 @@
+{
+    "name": "CaseyDeCoder.UnityExtras.Events.Editor",
+    "rootNamespace": "UnityExtras.Events.Editor",
+    "references": [
+        "GUID:806b0a144ac65a74899d99f880ae9914",
+        "GUID:746b902508456b94ea26d549837fd019",
+        "GUID:c4879cbc2f71c10408bbd8bb857bc1f7"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
