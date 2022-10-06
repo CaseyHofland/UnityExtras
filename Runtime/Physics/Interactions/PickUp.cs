@@ -4,24 +4,13 @@ using UnityEngine;
 
 namespace UnityExtras
 {
-    /// <include file='./PickUp.xml' path='docs/PickUp/*'/>
+    /// <summary>Follow a <see cref="Picker"/> by follow settings.</summary>
     [RequireComponent(typeof(Rigidbody))]
     [DisallowMultipleComponent]
-    public class PickUp : MonoBehaviour
+    public class PickUp : PickUpBase<Picker, PickUp>
     {
         private Rigidbody? _rigidbody;
         public new Rigidbody rigidbody => _rigidbody ? _rigidbody! : (_rigidbody = GetComponent<Rigidbody>());
-
-        [Serializable]
-        public class TargetSettings
-        {
-            [field: SerializeField] public bool enabled { get; set; } = true;
-            [field: SerializeField][field: Min(0f)] public float maxForce { get; set; } = float.PositiveInfinity;
-            [field: SerializeField][field: Range(0f, 1f)] public float dampingRatio { get; set; } = 1f;
-            [field: SerializeField][field: Min(0f)] public float frequency { get; set; } = 5f;
-            [field: SerializeField][field: Tooltip("Maximum force the joint can withstand before breaking. Infinity means unbreakable. [0.001, infinity].")][field: Min(0f)] public float breakForce { get; set; } = float.PositiveInfinity;
-        }
-
 
         [field: Header("Follow Settings")]
         [field: SerializeField][field: Tooltip("The position to follow relative to the Picker holding this PickUp.")] public Vector3 followCenter { get; set; } = Vector3.forward * 3f;
@@ -38,59 +27,32 @@ namespace UnityExtras
         [field: SerializeField][field: Tooltip("Settings for the underlying GyroJoint.")] public TargetSettings gyroSettings { get; set; } = new();
         [field: SerializeField][field: Tooltip("Settings for how to manipulate the Rigidbody on held.")] public RigidbodySettings rigidbodySettings { get; set; } = new();
 
-        public enum StoreMethod
-        {
-            None,
-            Override,
-            Break,
-        }
+        [field: Header("Break Settings")]
+        [field: SerializeField][field: Tooltip("Maximum distance the PickUp may have before breaking.")][field: Min(0f)] public float breakDistance { get; set; } = 8f;
+        [field: SerializeField][field: Tooltip("Obstruction layers that break the PickUp when obstructing the PickUp and Picker.")] public LayerMask breakLayers { get; set; }
 
+        #region Wrappers
         [Serializable]
-        public class Store<T>
-            where T : struct
+        public class TargetSettings
         {
-            [field: SerializeField] public T value { get; set; }
-            [field: SerializeField] public StoreMethod storeMethod { get; set; }
-            public T storedValue { get; private set; }
-
-            public Store() : this(default, default) { }
-            public Store(T value) : this(value, default) { }
-            public Store(T value, StoreMethod storeMethod)
-            {
-                this.value = this.storedValue = value;
-                this.storeMethod = storeMethod;
-            }
-
-            public static implicit operator T(Store<T> store) => store.storedValue;
-
-            public T StoreValue(T value)
-            {
-                switch (storeMethod)
-                {
-                    case StoreMethod.Override:
-                        this.storedValue = value;
-                        return this.value;
-                    case StoreMethod.Break:
-                        this.storedValue = this.value;
-                        return this.value;
-                    default:
-                        this.storedValue = value;
-                        return value;
-                }
-            }
+            [field: SerializeField] public bool enabled { get; set; } = true;
+            [field: SerializeField][field: Min(0f)] public float maxForce { get; set; } = float.PositiveInfinity;
+            [field: SerializeField][field: Range(0f, 1f)] public float dampingRatio { get; set; } = 1f;
+            [field: SerializeField][field: Min(0f)] public float frequency { get; set; } = 5f;
+            [field: SerializeField][field: Tooltip("Maximum force the joint can withstand before breaking. Infinity means unbreakable. [0.001, infinity].")][field: Min(0f)] public float breakForce { get; set; } = float.PositiveInfinity;
         }
 
         [Serializable]
         public class RigidbodySettings
         {
-            [field: SerializeField] public Store<float> mass { get; set; } = new Store<float>(1f);
-            [field: SerializeField] public Store<float> drag { get; set; } = new Store<float>(0f, StoreMethod.Override);
-            [field: SerializeField] public Store<float> angularDrag { get; set; } = new Store<float>(0f, StoreMethod.Override);
-            [field: SerializeField] public Store<bool> useGravity { get; set; } = new Store<bool>(false, StoreMethod.Override);
-            [field: SerializeField] public Store<bool> isKinematic { get; set; } = new Store<bool>(false, StoreMethod.Break);
-            [field: SerializeField] public Store<RigidbodyInterpolation> interpolation { get; set; } = new Store<RigidbodyInterpolation>();
-            [field: SerializeField] public Store<CollisionDetectionMode> collisionDetectionMode { get; set; } = new Store<CollisionDetectionMode>();
-            [field: SerializeField] public Store<RigidbodyConstraints> constraints { get; set; } = new Store<RigidbodyConstraints>();
+            [field: SerializeField] public ValueStore<float> mass { get; set; } = new(1f);
+            [field: SerializeField] public ValueStore<float> drag { get; set; } = new(0f, StoreMethod.Store);
+            [field: SerializeField] public ValueStore<float> angularDrag { get; set; } = new(0f, StoreMethod.Store);
+            [field: SerializeField] public ValueStore<bool> useGravity { get; set; } = new(false, StoreMethod.Store);
+            [field: SerializeField] public ValueStore<bool> isKinematic { get; set; } = new(false, StoreMethod.Override);
+            [field: SerializeField] public ValueStore<RigidbodyInterpolation> interpolation { get; set; } = new(RigidbodyInterpolation.Interpolate, StoreMethod.Store);
+            [field: SerializeField] public ValueStore<CollisionDetectionMode> collisionDetectionMode { get; set; } = new();
+            [field: SerializeField] public ValueStore<RigidbodyConstraints> constraints { get; set; } = new();
 
             public void Store(Rigidbody rigidbody)
             {
@@ -116,28 +78,65 @@ namespace UnityExtras
                 rigidbody.constraints = constraints.storedValue;
             }
         }
+        #endregion
 
-        [field: Header("Break Settings")]
-        [field: SerializeField][field: Tooltip("Maximum distance the PickUp may have before breaking.")][field: Min(0f)] public float breakDistance { get; set; } = 8f;
-        [field: SerializeField][field: Tooltip("Obstruction layers that break the PickUp when obstructing the PickUp and Picker.")] public LayerMask breakLayers { get; set; }
-
-        /// <summary>The <see cref="Picker"/> that is currently holding this <see cref="PickUp"/>, or <see langword="null"/> otherwise.</summary>
-        public Picker? holdingPicker { get; private set; }
-        
         private TargetJoint? targetJoint;
         private GyroJoint? gyroJoint;
 
         private void LateUpdate()
         {
+            TryBreak();
             Follow();
         }
 
-        private void OnDisable()
+        protected virtual void Follow()
         {
-            Drop();
+            if (holdingPicker == null)
+            {
+                return;
+            }
+
+            if (targetJoint == null
+                || gyroJoint == null)
+            {
+                this.Drop();
+                return;
+            }
+
+            // Set target settings.
+            targetJoint.enabled = targetSettings.enabled;
+            targetJoint.maxForce = targetSettings.maxForce;
+            targetJoint.dampingRatio = targetSettings.dampingRatio;
+            targetJoint.frequency = targetSettings.frequency;
+            targetJoint.breakForce = targetSettings.breakForce;
+
+            gyroJoint.enabled = gyroSettings.enabled;
+            gyroJoint.maxTorque = gyroSettings.maxForce;
+            gyroJoint.dampingRatio = gyroSettings.dampingRatio;
+            gyroJoint.frequency = gyroSettings.frequency;
+            gyroJoint.breakTorque = gyroSettings.breakForce;
+
+            // Set position target.
+            var tmp = rigidbody.detectCollisions;
+            rigidbody.detectCollisions = false;
+            if (followCenter != Vector3.zero
+                && Physics.Linecast(holdingPicker.transform.position, holdingPicker.transform.position + followCenter, out var hit, ExtraPhysics.GetLayerCollisionMask(gameObject.layer), QueryTriggerInteraction.Ignore))
+            {
+                targetJoint.target = hit.point;
+            }
+            else
+            {
+                targetJoint.target = holdingPicker.transform.position + holdingPicker.transform.rotation * followCenter;
+            }
+            rigidbody.detectCollisions = tmp;
+
+            // Set gyro target.
+            var gyroTargetEuler = holdingPicker.transform.eulerAngles;
+            gyroTargetEuler.x *= followUpwards;
+            gyroJoint.target = followRotation * Quaternion.Euler(gyroTargetEuler);
         }
 
-        private void Follow()
+        protected virtual void TryBreak()
         {
             if (holdingPicker == null)
             {
@@ -148,57 +147,17 @@ namespace UnityExtras
             rigidbody.detectCollisions = false;
 
             // Drop the pick up if the connection broke.
-            if (targetJoint == null
-                || gyroJoint == null
-                || (transform.position - holdingPicker.transform.position).sqrMagnitude >= breakDistance * breakDistance
+            if ((transform.position - holdingPicker.transform.position).sqrMagnitude >= breakDistance * breakDistance
                 || Physics.Linecast(holdingPicker.transform.position, rigidbody.position, breakLayers, QueryTriggerInteraction.Ignore))
             {
-                Drop();
-            }
-            else
-            {
-                // Set target settings.
-                targetJoint.enabled = targetSettings.enabled;
-                targetJoint.maxForce = targetSettings.maxForce;
-                targetJoint.dampingRatio = targetSettings.dampingRatio;
-                targetJoint.frequency = targetSettings.frequency;
-                targetJoint.breakForce = targetSettings.breakForce;
-
-                gyroJoint.enabled = gyroSettings.enabled;
-                gyroJoint.maxTorque = gyroSettings.maxForce;
-                gyroJoint.dampingRatio = gyroSettings.dampingRatio;
-                gyroJoint.frequency = gyroSettings.frequency;
-                gyroJoint.breakTorque = gyroSettings.breakForce;
-
-                // Set position target.
-                if (Physics.Raycast(holdingPicker.transform.position, holdingPicker.transform.forward, out var hit, followCenter.magnitude, ExtraPhysics.GetLayerCollisionMask(gameObject.layer), QueryTriggerInteraction.Ignore))
-                {
-                    targetJoint.target = hit.point;
-                }
-                else
-                {
-                    targetJoint.target = holdingPicker.transform.position + holdingPicker.transform.rotation * followCenter;
-                }
-
-                // Set gyro target.
-                var gyroTargetEuler = holdingPicker.transform.eulerAngles;
-                gyroTargetEuler.x *= followUpwards;
-                gyroJoint.target = Quaternion.Euler(gyroTargetEuler);
+                this.Drop();
             }
 
             rigidbody.detectCollisions = tmp;
         }
 
-        /// <include file='./PickUp.xml' path='docs/Hold/*'/>
-        public void Hold(Picker picker)
+        protected override void OnHold(Picker picker)
         {
-            if (holdingPicker == picker || !enabled)
-            {
-                return;
-            }
-
-            Drop();
-
             // Add a TargetJoint and GyroJoint to be used by PickUp for following the Picker.
             targetJoint = gameObject.AddComponent<TargetJoint>();
             gyroJoint = gameObject.AddComponent<GyroJoint>();
@@ -207,41 +166,30 @@ namespace UnityExtras
 
             if (usePickUpRotation)
             {
-                followRotation = Quaternion.Inverse(Quaternion.LookRotation(picker.transform.forward));
+                followRotation = Quaternion.Inverse(picker.transform.rotation);
+                //followRotation = Quaternion.Inverse(Quaternion.LookRotation(picker.transform.forward));
             }
 
             rigidbodySettings.Store(rigidbody);
-
-            holdingPicker = picker;
-            picker.Hold(this);
         }
 
-        /// <include file='./PickUp.xml' path='docs/Drop/*'/>
-        public void Drop()
+        protected override void OnDrop()
         {
-            var tmp = holdingPicker;
-            holdingPicker = null;
+            Destroy(targetJoint);
+            Destroy(gyroJoint);
 
-            if (tmp != null)
+            rigidbodySettings.Restore(rigidbody);
+
+            // Adjust the velocity for maxReleaseForce.
+            if (rigidbody.velocity.sqrMagnitude > maxReleaseForce * maxReleaseForce)
             {
-                Destroy(targetJoint);
-                Destroy(gyroJoint);
+                rigidbody.velocity *= maxReleaseForce / rigidbody.velocity.magnitude;
+            }
 
-                rigidbodySettings.Restore(rigidbody);
-
-                // Adjust the velocity for maxReleaseForce.
-                if (rigidbody.velocity.sqrMagnitude > maxReleaseForce * maxReleaseForce)
-                {
-                    rigidbody.velocity *= maxReleaseForce / rigidbody.velocity.magnitude;
-                }
-
-                // Adjust the torque for maxReleaseTorque.
-                if (rigidbody.angularVelocity.sqrMagnitude > maxReleaseTorque * maxReleaseTorque)
-                {
-                    rigidbody.angularVelocity *= maxReleaseTorque / rigidbody.angularVelocity.magnitude;
-                }
-
-                tmp.Drop();
+            // Adjust the torque for maxReleaseTorque.
+            if (rigidbody.angularVelocity.sqrMagnitude > maxReleaseTorque * maxReleaseTorque)
+            {
+                rigidbody.angularVelocity *= maxReleaseTorque / rigidbody.angularVelocity.magnitude;
             }
         }
     }
