@@ -64,7 +64,7 @@ namespace UnityExtras.InputSystem
         {
             var go = new GameObject(nameof(ReactionUpdater), typeof(ReactionUpdater))
             {
-                hideFlags = HideFlags.HideAndDontSave
+                hideFlags = HideFlags.HideInHierarchy
             };
         }
     }
