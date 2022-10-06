@@ -1,6 +1,5 @@
 #nullable enable
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
@@ -49,8 +48,8 @@ namespace UnityExtras.InputSystem.Editor
                 property.serializedObject.ApplyModifiedProperties();
             }
 
-            property.isExpanded = TryGetProcessor(property, out var processor)
-                && processor.inputProcessor?.GetType().GetFields().Length > 0
+            var processor = property.GetValue<Processor>();
+            property.isExpanded = processor.inputProcessor?.GetType().GetFields().Length > 0
                 && EditorGUI.Foldout(position, property.isExpanded, label, true);
             if (property.isExpanded)
             {
@@ -107,39 +106,12 @@ namespace UnityExtras.InputSystem.Editor
         {
             var height = base.GetPropertyHeight(property, label);
 
-            if (property.isExpanded && TryGetProcessor(property, out var processor))
+            if (property.isExpanded)
             {
-                height += (EditorGUIUtility.singleLineHeight + 2f) * processor.inputProcessor?.GetType().GetFields().Length ?? 0;
+                height += (EditorGUIUtility.singleLineHeight + 2f) * property.GetValue<Processor>().inputProcessor?.GetType().GetFields().Length ?? 0;
             }
 
             return height;
-        }
-
-        private Processor? GetProcessor(SerializedProperty property)
-        {
-            var value = property.GetField(out var target).GetValue(target);
-
-            if (value == null)
-            {
-                return null;
-            }
-
-            if (!(value is Processor processor)
-                && value is IList<Processor> processors)
-            {
-                var path = property.propertyPath;
-                int index = int.Parse(path.Substring(index = path.LastIndexOf('[') + 1, path.LastIndexOf(']') - index));
-                processor = processors[index];
-            }
-
-            return processor;
-        }
-
-        private bool TryGetProcessor(SerializedProperty property, out Processor processor)
-        {
-            var tmp = GetProcessor(property);
-            processor = tmp ?? default;
-            return tmp != null;
         }
     }
 }
