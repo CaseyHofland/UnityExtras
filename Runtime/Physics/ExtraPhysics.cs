@@ -5,11 +5,13 @@ using UnityEngine;
 
 namespace UnityExtras
 {
+    /// <summary>Extra physics helper methods.</summary>
     public class ExtraPhysics
     {
-        internal static List<Collider> collidersCache = new List<Collider>();
-        internal static List<Collider> collidersComparisonCache = new List<Collider>();
+        internal static List<Collider> collidersCache = new();
+        internal static List<Collider> collidersComparisonCache = new();
 
+        /// <include file='./ExtraPhysics.xml' path='docs/GetLayerCollisionMask/*'/>
         public static int GetLayerCollisionMask(int layer)
         {
             if (layer < 0 || layer > 31)
@@ -28,6 +30,7 @@ namespace UnityExtras
             return layerCollisionMask;
         }
 
+        /// <include file='./ExtraPhysics.xml' path='docs/SetLayerCollisionMask/*'/>
         public static void SetLayerCollisionMask(int layer, int layerMask)
         {
             if (layer < 0 || layer > 31)

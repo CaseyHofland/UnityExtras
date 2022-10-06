@@ -1,0 +1,16 @@
+{
+    "name": "CaseyDeCoder.UnityExtras.Rendering.Editor",
+    "rootNamespace": "UnityExtras.Editor",
+    "references": [
+        "GUID:973ce38314330194689df4764ef94eb5"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

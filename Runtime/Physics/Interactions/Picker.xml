@@ -1,0 +1,61 @@
+﻿<docs>
+    <Picker>
+        <summary>
+            Caster to check for <see cref="PickUp"/>.
+        </summary>
+    </Picker>
+    <PickUpCast>
+        <summary>
+            Perform a <see cref="Physics.SphereCast"/> querying for <see cref="PickUp"/>.
+        </summary>
+        <param name="pickUp">
+            The <see cref="PickUp"/> being hit.
+        </param>
+        <returns>
+            If the cast hit a <see cref="PickUp"/>.
+        </returns>
+    </PickUpCast>
+    
+    
+    
+    
+    
+    <HeldOrTryHold>
+        <summary>
+            Get the held <see cref="PickUp"/> or try to hold a <see cref="PickUp"/> using <see cref="PickUpCast"/>.
+        </summary>
+        <param name="pickUp">
+            The <see cref="PickUp"/> held or now being held.
+        </param>
+        <returns>
+            If the <see cref="Picker"/> held or is now holding a <see cref="PickUp"/>.
+        </returns>
+    </HeldOrTryHold>
+    <TryHold>
+        <summary>
+            Try to hold a <see cref="PickUp"/> using <see cref="PickUpCast"/>.
+        </summary>
+        <param name="pickUp">
+            The <see cref="PickUp"/> now being held.
+        </param>
+        <returns>
+            If the <see cref="Picker"/> is now holding a <see cref="PickUp"/>.
+        </returns>
+    </TryHold>
+    <Hold>
+        <summary>
+            Hold a <see cref="PickUp"/>.
+        </summary>
+        <param name="pickUp">
+            The <see cref="PickUp"/> to hold.
+        </param>
+    </Hold>
+    <Drop>
+        <summary>
+            Drop the currently held <see cref="PickUp"/>.
+        </summary>
+        <remarks>
+            <seealso cref="heldPickUp"/>.
+        </remarks>
+    </Drop>
+</docs>

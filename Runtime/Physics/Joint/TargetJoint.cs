@@ -1,10 +1,8 @@
 #nullable enable
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Assertions;
-using Unity.Mathematics;
-
 using static Unity.Mathematics.math;
-using static UnityExtras.ExtraMath;
 
 namespace UnityExtras
 {
@@ -22,7 +20,7 @@ namespace UnityExtras
         [field: SerializeField][field: Min(0f)] public float maxForce { get; set; } = 10_000f;
         [SerializeField] private float _dampingRatio = 1f;
         [field: SerializeField][field: Min(0f)] public float frequency { get; set; } = 5f;
-        [field: SerializeField] public float breakForce { get; set; } = float.PositiveInfinity;
+        [field: SerializeField][field: Tooltip("Maximum force the joint can withstand before breaking. Infinity means unbreakable. [0.001, infinity].")][field: Min(0.001f)] public float breakForce { get; set; } = float.PositiveInfinity;
 
         public float dampingRatio
         {
@@ -108,7 +106,7 @@ namespace UnityExtras
         private Vector3 _normalAnchor;
         private bool _normalAnchorNotZero;
         private float _inverseMass;
-        private Vector3 _inverseInertia;
+        private float3 _inverseInertia;
         private float _gamma;
         private float _beta;
         private float3x3 _effectiveMass;
@@ -128,8 +126,9 @@ namespace UnityExtras
             // Cache common operations.
             _normalAnchor = rigidbody.transform.TransformDirection(anchor - rigidbody.centerOfMass);
             _normalAnchorNotZero = !_normalAnchor.Equals(Vector3.zero);
-            _inverseMass = InverseSafe(rigidbody.mass);
-            _inverseInertia = InverseSafe(rigidbody.inertiaTensor);
+
+            _inverseMass = select(rcp(rigidbody.mass), 0f, rigidbody.mass == 0f);
+            _inverseInertia = select(rcp(rigidbody.inertiaTensor), 0f, (float3)rigidbody.inertiaTensor == 0f);
 
             // Compute the effective mass matrix.
             {
@@ -202,12 +201,7 @@ namespace UnityExtras
             float3 cDot = rigidbody.velocity;
             if (_normalAnchorNotZero)
             {
-                cDot += new float3
-                (
-                    rigidbody.angularVelocity.y * _normalAnchor.z - rigidbody.angularVelocity.z * _normalAnchor.y,
-                    rigidbody.angularVelocity.z * _normalAnchor.x - rigidbody.angularVelocity.x * _normalAnchor.z,
-                    rigidbody.angularVelocity.x * _normalAnchor.y - rigidbody.angularVelocity.y * _normalAnchor.x
-                );
+                cDot += cross(rigidbody.angularVelocity, _normalAnchor);
             }
             float3 targetVector = rigidbody.worldCenterOfMass + _normalAnchor - target;
             float3 impulse = mul(_effectiveMass, -(cDot + _beta * targetVector + _gamma * _smoothImpulse));
@@ -235,12 +229,7 @@ namespace UnityExtras
 
                 if (_normalAnchorNotZero)
                 {
-                    rigidbody.angularVelocity += new Vector3
-                    (
-                        _inverseInertia.x * (_normalAnchor.y * impulse.z - _normalAnchor.z * impulse.y),
-                        _inverseInertia.y * (_normalAnchor.z * impulse.x - _normalAnchor.x * impulse.z),
-                        _inverseInertia.z * (_normalAnchor.x * impulse.y - _normalAnchor.y * impulse.x)
-                    );
+                    rigidbody.angularVelocity += (Vector3)(_inverseInertia * cross(_normalAnchor, impulse));
                 }
             }
         }

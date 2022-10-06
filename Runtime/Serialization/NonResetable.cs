@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace UnityExtras
 {
+    /// <summary>Wrapper for ensuring <typeparamref name="T"/> won't be reset through Unity serialization.</summary>
     [Serializable]
     public struct NonResetable<T> : ISerializationCallbackReceiver
     {
@@ -13,7 +14,7 @@ namespace UnityExtras
         [SerializeField] [HideInInspector] private bool valid;
 
         public static implicit operator T(NonResetable<T> nonResetable) => nonResetable.value;
-        public static implicit operator NonResetable<T>(T value) => new NonResetable<T> { value = value };
+        public static implicit operator NonResetable<T>(T value) => new() { value = value };
 
         public void OnBeforeSerialize()
         {

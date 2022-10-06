@@ -1,16 +1,15 @@
 ﻿#nullable enable
-using System;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
-using Object = UnityEngine.Object;
-
-namespace UnityExtras
+namespace UnityExtras.Events
 {
-    [AddComponentMenu("Event/On Event")]
-    public class OnEvent : MonoBehaviour
+    /// <summary>Helper <see cref="Component"/> for quickly binding <see cref="Scene"/> functionality via <see cref="UnityEvent"/>.</summary>
+    [AddComponentMenu("Event/Mono Event")]
+    public class MonoEvent : MonoBehaviour
     {
-        [field: SerializeField] public EventTrigger eventTrigger { get; set; }
+        [field: SerializeField] public MonoEventTrigger eventTrigger { get; set; }
         [field: SerializeField] public bool checkTag { get; set; }
         [field: SerializeField] public string? collisionTag { get; set; } = "Untagged";
         [field: SerializeField][field: Min(0f)] public float collisionForce { get; set; }
@@ -27,26 +26,26 @@ namespace UnityExtras
         public UnityEventBase? currentEvent => eventTrigger switch
         {
             var e when
-                e == EventTrigger.OnTriggerEnter    || 
-                e == EventTrigger.OnTriggerStay     ||
-                e == EventTrigger.OnTriggerExit     => colliderEvent,
+                e == MonoEventTrigger.OnTriggerEnter    || 
+                e == MonoEventTrigger.OnTriggerStay     ||
+                e == MonoEventTrigger.OnTriggerExit     => colliderEvent,
             var e when
-                e == EventTrigger.OnTriggerEnter2D  ||
-                e == EventTrigger.OnTriggerStay2D   ||
-                e == EventTrigger.OnTriggerExit2D   => collider2DEvent,
+                e == MonoEventTrigger.OnTriggerEnter2D  ||
+                e == MonoEventTrigger.OnTriggerStay2D   ||
+                e == MonoEventTrigger.OnTriggerExit2D   => collider2DEvent,
             var e when
-                e == EventTrigger.OnCollisionEnter  ||
-                e == EventTrigger.OnCollisionStay   ||
-                e == EventTrigger.OnCollisionExit   => collisionEvent,
+                e == MonoEventTrigger.OnCollisionEnter  ||
+                e == MonoEventTrigger.OnCollisionStay   ||
+                e == MonoEventTrigger.OnCollisionExit   => collisionEvent,
             var e when
-                e == EventTrigger.OnCollisionEnter2D    ||
-                e == EventTrigger.OnCollisionStay2D     ||
-                e == EventTrigger.OnCollisionExit2D     => collision2DEvent,
-            EventTrigger.None => null,
+                e == MonoEventTrigger.OnCollisionEnter2D    ||
+                e == MonoEventTrigger.OnCollisionStay2D     ||
+                e == MonoEventTrigger.OnCollisionExit2D     => collision2DEvent,
+            MonoEventTrigger.None => null,
             _ => unityEvent
         };
 
-        public enum EventTrigger
+        public enum MonoEventTrigger
         {
             None,
             Awake,
@@ -76,34 +75,34 @@ namespace UnityExtras
 
         private void Awake()
         {
-            HandleGameEvent(EventTrigger.Awake);
+            HandleGameEvent(MonoEventTrigger.Awake);
         }
 
         private void Start()
         {
-            HandleGameEvent(EventTrigger.Start);
+            HandleGameEvent(MonoEventTrigger.Start);
         }
 
         private void OnDestroy()
         {
-            HandleGameEvent(EventTrigger.OnDestroy);
+            HandleGameEvent(MonoEventTrigger.OnDestroy);
         }
 
         private void OnEnable()
         {
-            HandleGameEvent(EventTrigger.OnEnable);
+            HandleGameEvent(MonoEventTrigger.OnEnable);
         }
 
         private void OnDisable()
         {
-            HandleGameEvent(EventTrigger.OnDisable);
+            HandleGameEvent(MonoEventTrigger.OnDisable);
         }
 
         private void OnTriggerEnter(Collider other)
         {
             if (CheckTag(other.tag))
             {
-                HandleGameEvent(EventTrigger.OnTriggerEnter, other);
+                HandleGameEvent(MonoEventTrigger.OnTriggerEnter, other);
             }
         }
 
@@ -111,7 +110,7 @@ namespace UnityExtras
         {
             if (CheckTag(other.tag))
             {
-                HandleGameEvent(EventTrigger.OnTriggerStay, other);
+                HandleGameEvent(MonoEventTrigger.OnTriggerStay, other);
             }
         }
 
@@ -119,7 +118,7 @@ namespace UnityExtras
         {
             if (CheckTag(other.tag))
             {
-                HandleGameEvent(EventTrigger.OnTriggerExit, other);
+                HandleGameEvent(MonoEventTrigger.OnTriggerExit, other);
             }
         }
 
@@ -127,7 +126,7 @@ namespace UnityExtras
         {
             if (CheckTag(other.tag))
             {
-                HandleGameEvent(EventTrigger.OnTriggerEnter2D, other);
+                HandleGameEvent(MonoEventTrigger.OnTriggerEnter2D, other);
             }
         }
 
@@ -135,7 +134,7 @@ namespace UnityExtras
         {
             if (CheckTag(other.tag))
             {
-                HandleGameEvent(EventTrigger.OnTriggerStay2D, other);
+                HandleGameEvent(MonoEventTrigger.OnTriggerStay2D, other);
             }
         }
 
@@ -143,7 +142,7 @@ namespace UnityExtras
         {
             if (CheckTag(other.tag))
             {
-                HandleGameEvent(EventTrigger.OnTriggerExit2D, other);
+                HandleGameEvent(MonoEventTrigger.OnTriggerExit2D, other);
             }
         }
 
@@ -152,7 +151,7 @@ namespace UnityExtras
             if (CheckTag(collision.transform.tag)
                 && collision.relativeVelocity.sqrMagnitude >= collisionForce * collisionForce)
             {
-                HandleGameEvent(EventTrigger.OnCollisionEnter, collision);
+                HandleGameEvent(MonoEventTrigger.OnCollisionEnter, collision);
             }
         }
 
@@ -161,7 +160,7 @@ namespace UnityExtras
             if (CheckTag(collision.transform.tag)
                 && collision.relativeVelocity.sqrMagnitude >= collisionForce * collisionForce)
             {
-                HandleGameEvent(EventTrigger.OnCollisionStay, collision);
+                HandleGameEvent(MonoEventTrigger.OnCollisionStay, collision);
             }
         }
 
@@ -170,7 +169,7 @@ namespace UnityExtras
             if (CheckTag(collision.transform.tag)
                 && collision.relativeVelocity.sqrMagnitude >= collisionForce * collisionForce)
             {
-                HandleGameEvent(EventTrigger.OnCollisionExit, collision);
+                HandleGameEvent(MonoEventTrigger.OnCollisionExit, collision);
             }
         }
 
@@ -179,7 +178,7 @@ namespace UnityExtras
             if (CheckTag(collision.transform.tag)
                 && collision.relativeVelocity.sqrMagnitude >= collisionForce * collisionForce)
             {
-                HandleGameEvent(EventTrigger.OnCollisionEnter2D, collision);
+                HandleGameEvent(MonoEventTrigger.OnCollisionEnter2D, collision);
             }
         }
 
@@ -188,7 +187,7 @@ namespace UnityExtras
             if (CheckTag(collision.transform.tag)
                 && collision.relativeVelocity.sqrMagnitude >= collisionForce * collisionForce)
             {
-                HandleGameEvent(EventTrigger.OnCollisionStay2D, collision);
+                HandleGameEvent(MonoEventTrigger.OnCollisionStay2D, collision);
             }
         }
 
@@ -197,31 +196,31 @@ namespace UnityExtras
             if (CheckTag(collision.transform.tag)
                 && collision.relativeVelocity.sqrMagnitude >= collisionForce * collisionForce)
             {
-                HandleGameEvent(EventTrigger.OnCollisionExit2D, collision);
+                HandleGameEvent(MonoEventTrigger.OnCollisionExit2D, collision);
             }
         }
 
         private void OnMouseEnter()
         {
-            HandleGameEvent(EventTrigger.MouseEnter);
+            HandleGameEvent(MonoEventTrigger.MouseEnter);
         }
 
         private void OnMouseExit()
         {
-            HandleGameEvent(EventTrigger.MouseExit);
+            HandleGameEvent(MonoEventTrigger.MouseExit);
         }
 
         private void OnMouseDown()
         {
-            HandleGameEvent(EventTrigger.MouseDown);
+            HandleGameEvent(MonoEventTrigger.MouseDown);
         }
 
         private void OnMouseUp()
         {
-            HandleGameEvent(EventTrigger.MouseUp);
+            HandleGameEvent(MonoEventTrigger.MouseUp);
         }
 
-        private void HandleGameEvent(EventTrigger gameEvent, object? obj = null)
+        private void HandleGameEvent(MonoEventTrigger gameEvent, object? obj = null)
         {
             if (eventTrigger != gameEvent || !this)
             {
@@ -230,24 +229,24 @@ namespace UnityExtras
 
             switch (gameEvent)
             {
-                case EventTrigger.OnTriggerEnter:
-                case EventTrigger.OnTriggerStay:
-                case EventTrigger.OnTriggerExit:
+                case MonoEventTrigger.OnTriggerEnter:
+                case MonoEventTrigger.OnTriggerStay:
+                case MonoEventTrigger.OnTriggerExit:
                     colliderEvent.Invoke((obj as Collider)!);
                     break;
-                case EventTrigger.OnTriggerEnter2D:
-                case EventTrigger.OnTriggerStay2D:
-                case EventTrigger.OnTriggerExit2D:
+                case MonoEventTrigger.OnTriggerEnter2D:
+                case MonoEventTrigger.OnTriggerStay2D:
+                case MonoEventTrigger.OnTriggerExit2D:
                     collider2DEvent.Invoke((obj as Collider2D)!);
                     break;
-                case EventTrigger.OnCollisionEnter:
-                case EventTrigger.OnCollisionStay:
-                case EventTrigger.OnCollisionExit:
+                case MonoEventTrigger.OnCollisionEnter:
+                case MonoEventTrigger.OnCollisionStay:
+                case MonoEventTrigger.OnCollisionExit:
                     collisionEvent.Invoke((obj as Collision)!);
                     break;
-                case EventTrigger.OnCollisionEnter2D:
-                case EventTrigger.OnCollisionStay2D:
-                case EventTrigger.OnCollisionExit2D:
+                case MonoEventTrigger.OnCollisionEnter2D:
+                case MonoEventTrigger.OnCollisionStay2D:
+                case MonoEventTrigger.OnCollisionExit2D:
                     collision2DEvent.Invoke((obj as Collision2D)!);
                     break;
                 default:
@@ -260,25 +259,31 @@ namespace UnityExtras
                 Debug.Log($"{gameEvent} event invoked on {this}.");
             }
 
-            if (triggerOnce && gameEvent != EventTrigger.OnDestroy)
+            if (triggerOnce && gameEvent != MonoEventTrigger.OnDestroy)
             {
                 Destroy(this);
             }
         }
 
+        /// <summary>Removes a <see cref="GameObject"/>, <see cref="Component"/> or Asset.</summary>
+        /// <param name="obj"><see cref="Object"/> to destroy.</param>
         public new void Destroy(Object obj)
         {
             Object.Destroy(obj);
         }
 
+        /// <summary>Destroys the <see cref="Object"/> <paramref name="obj"/> immediately. You are strongly recommended to use <see cref="Destroy"/> instead.</summary>
+        /// <param name="obj"><see cref="Object"/> to destroy.</param>
         public new void DestroyImmediate(Object obj)
         {
             Object.DestroyImmediate(obj);
         }
 
+        /// <summary>Do not destroy the target <see cref="Object"/> when loading a new <see cref="Scene"/>.</summary>
+        /// <param name="target">An <see cref="Object"/> not destroyed on <see cref="Scene"/> change.</param>
         public new void DontDestroyOnLoad(Object target)
         {
-            Object.DontDestroyOnLoad(target);
+            Object.DontDestroyOnLoad( target);
         }
     }
 }

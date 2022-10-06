@@ -3,17 +3,19 @@ using UnityEngine;
 using Unity.Mathematics;
 
 using static UnityEngine.Mathf;
+using System.Runtime.CompilerServices;
 
 namespace UnityExtras
 {
+    /// <include file='./ExtraMath.xml' path='docs/ExtraMath/*'/>
     public class ExtraMath
     {
-        public static float InverseSafe(float x, float defaultValue = default) => x == 0f ? defaultValue : 1f / x;
-        public static float2 InverseSafe(float2 x, float2 defaultValue = default) => new float2(InverseSafe(x.x, defaultValue.x), InverseSafe(x.y, defaultValue.y));
-        public static float3 InverseSafe(float3 x, float3 defaultValue = default) => new float3(InverseSafe(x.x, defaultValue.x), InverseSafe(x.yz, defaultValue.yz));
-        public static float4 InverseSafe(float4 x, float4 defaultValue = default) => new float4(InverseSafe(x.x, defaultValue.x), InverseSafe(x.yzw, defaultValue.yzw));
-
+        /// <include file='./ExtraMath.xml' path='docs/Angle/*'/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float Angle(Vector2 direction) => direction != Vector2.right ? Vector2.SignedAngle(Vector2.right, direction) : 0f;
+
+        /// <include file='./ExtraMath.xml' path='docs/Direction/*'/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 Direction(float degrees)
         {
             if (degrees == 0f)
@@ -23,12 +25,33 @@ namespace UnityExtras
 
             var radians = degrees * Deg2Rad;
             return new Vector2(Cos(radians), Sin(radians));
-
         }
-        public static Vector2 Rotate2D(Vector2 x, float degrees) => degrees != 0f ? Direction(Angle(x.normalized) + degrees) * x.magnitude : x;
 
+        /// <include file='./ExtraMath.xml' path='docs/Rotate2D/*'/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Vector2 Rotate2D(Vector2 x, float degrees) => degrees != 0f ? Direction(Angle(x) + degrees) * x.magnitude : x;
+
+        /// <include file='./ExtraMath.xml' path='docs/JumpVelocity/*'/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 JumpVelocity(float desiredHeight) => JumpVelocity(desiredHeight, Physics.gravity);
+
+        /// <include file='./ExtraMath.xml' path='docs/JumpVelocity/*'/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 JumpVelocity(float desiredHeight, Vector3 gravity) => JumpVelocity(desiredHeight, gravity.normalized, gravity.magnitude);
+
+        /// <include file='./ExtraMath.xml' path='docs/JumpVelocity/*'/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 JumpVelocity(float desiredHeight, Vector3 gravityDirection, float gravityMagnitude) => -gravityDirection * Sqrt(desiredHeight * 2f * gravityMagnitude);
+
+        /// <include file='./ExtraMath.xml' path='docs/FetchRotation2D/*'/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float FetchRotation2D(quaternion quaternion)
+        {
+            const float Rot2Rot2D = 2f * Rad2Deg;
+
+            return Rot2Rot2D * (quaternion.value.w < 0f
+                ? math.atan2(-quaternion.value.z, -quaternion.value.w)
+                : math.atan2(quaternion.value.z, quaternion.value.w));
+        }
     }
 }

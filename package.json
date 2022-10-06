@@ -1,9 +1,9 @@
 {
   "name": "com.caseydecoder.unityextras",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "Unity Extras",
   "description": "A package containing extras for the Unity Game Engine. Full of reusable code to create common game mechanics with.",
-  "unity": "2021.1",
+  "unity": "2021.3",
   "keywords": [
     "unity",
     "extra",

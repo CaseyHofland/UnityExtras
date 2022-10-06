@@ -1,0 +1,18 @@
+﻿<docs>
+    <GetLayerCollisionMask>
+        <summary>
+            Get the collision layer mask that indicates which layer(s) the specified layer can collide with.
+        </summary>
+        <param name="layer">The layer to retrieve the collision layer mask for.</param>
+        <returns>A mask where each bit indicates a layer and wether it can collide with layer or not.</returns>
+        <exception cref="ArgumentOutOfRangeException">The layer is out of range of specified layers (between 0 and 31).</exception>
+    </GetLayerCollisionMask>
+    <SetLayerCollisionMask>
+        <summary>
+            Set the collision layer mask that indicates which layer(s) the specified layer can collide with.
+        </summary>
+        <param name="layer">The layer to set the collision layer mask for.</param>
+        <param name="layerMask">A mask where each bit indicates a layer and wether it can collide with layer or not.</param>
+        <exception cref="ArgumentOutOfRangeException">The layer is out of range of specified layers (between 0 and 31).</exception>
+    </SetLayerCollisionMask>
+</docs>

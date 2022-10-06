@@ -1,0 +1,44 @@
+﻿<docs>
+    <ExtraMath>
+        <summary>A collection of extra math functions.</summary>
+    </ExtraMath>
+    <Angle>
+        <param name="direction">The direction to get the signed angle from. Doesn't need to be normalized.</param>
+        <returns>
+            The signed angle in degrees of the <see cref="Vector2"/> <paramref name="direction"/>.
+        </returns>
+    </Angle>
+    <Direction>
+        <param name="degrees">The degrees to get the direction from.</param>
+        <returns>
+            The direction from the <see cref="float"/> <paramref name="degrees"/>.
+        </returns>
+    </Direction>
+    <Rotate2D>
+        <param name="x">
+            The <see cref="Vector2"/> to rotate.
+        </param>
+        <param name="degrees">
+            The <paramref name="degrees"/> to rotate by.
+        </param>
+        <returns>
+            The rotated <see cref="Vector2"/>.
+        </returns>
+    </Rotate2D>
+    <JumpVelocity>
+        <param name="desiredHeight">
+            The desired height to reach.
+        </param>
+        <returns>
+            The velocity needed to reach the <paramref name="desiredHeight"/>.
+        </returns>
+    </JumpVelocity>
+    <FetchRotation2D>
+        <param name="quaternion">
+            The <see cref="quaternion"/> to get the 2D rotation from.
+        </param>
+        <returns>
+            The 2D rotation in degrees of the <see cref="quaternion"/>.
+        </returns>
+    </FetchRotation2D>
+</docs>

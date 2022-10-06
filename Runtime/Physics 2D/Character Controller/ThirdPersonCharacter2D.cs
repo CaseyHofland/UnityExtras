@@ -1,11 +1,11 @@
 #nullable enable
 using UnityEngine;
 using UnityEngine.InputSystem;
-
-using Input = UnityExtras.InputSystem.Input;
+using UnityExtras.InputSystem;
 
 namespace UnityExtras
 {
+    /// <summary>Handle third person character 2D movement through input.</summary>
     [AddComponentMenu("Physics 2D/Third Person Character 2D")]
     [RequireComponent(typeof(CharacterMover2D))]
     [DisallowMultipleComponent]
@@ -18,33 +18,67 @@ namespace UnityExtras
 
         #region Input
         [field: Header("Input")]
-        [field: SerializeField] public Input moveInput { get; set; }
-        [field: SerializeField] public Input sprintInput { get; set; }
-        [field: SerializeField] public Input jumpInput { get; set; }
+        [field: SerializeField] public InputReaction moveReaction { get; set; }
+        [field: SerializeField] public InputReaction sprintReaction { get; set; }
+        [field: SerializeField] public InputReaction jumpReaction { get; set; }
+
+        private const float jumpHoldTime = 0.8f;
+        private float _currentJumpHoldTime = jumpHoldTime;
 
         private void OnEnable()
         {
-            moveInput.action!.performed += MovePerformed;
-            jumpInput.action!.performed += JumpPerformed;
+            if (moveReaction.reaction != null)
+            {
+                moveReaction.reaction.performed += MovePerformed;
+            }
+            if (jumpReaction.reaction != null && jumpReaction.input.action != null)
+            {
+                jumpReaction.reaction.performed += JumpPerformed;
+                jumpReaction.input.action.canceled += JumpCanceled;
+            }
         }
 
         private void OnDisable()
         {
-            moveInput.action!.performed -= MovePerformed;
-            jumpInput.action!.performed -= JumpPerformed;
+            if (moveReaction.reaction != null)
+            {
+                moveReaction.reaction.performed -= MovePerformed;
+            }
+            if (jumpReaction.reaction != null && jumpReaction.input.action != null)
+            {
+                jumpReaction.reaction.performed -= JumpPerformed;
+                jumpReaction.input.action.canceled -= JumpCanceled;
+            }
         }
 
         private void MovePerformed(InputAction.CallbackContext context)
         {
-            var speed = context.ReadValue<float>();
+            var speed = context.ReadRevalue<float>();
             var direction = new Vector2(speed, 0f);
-            characterMover2D.Move(direction, sprintInput.action!.inProgress);
+            characterMover2D.Move(direction, sprintReaction.reaction?.isPerformed ?? false);
             characterMover2D.Turn(speed > 0f);
         }
 
         private void JumpPerformed(InputAction.CallbackContext context)
         {
             characterMover2D.Jump();
+            if (!characterMover2D.allowPerpetualJump)
+            {
+                _currentJumpHoldTime -= Time.deltaTime;
+                if (_currentJumpHoldTime <= 0f)
+                {
+                    jumpReaction.reaction!.isPerformed = false;
+                    _currentJumpHoldTime = jumpHoldTime + characterMover2D.jumpBuffer;
+                }
+            }
+        }
+
+        private void JumpCanceled(InputAction.CallbackContext context)
+        {
+            if (!jumpReaction.reaction!.isPerformed)
+            {
+                _currentJumpHoldTime = jumpHoldTime + characterMover2D.jumpBuffer;
+            }
         }
         #endregion
     }

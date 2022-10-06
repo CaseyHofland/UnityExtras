@@ -1,11 +1,12 @@
 ﻿#nullable disable
 using UnityEditor;
+using UnityExtras.Editor;
 
-namespace UnityExtras.Editor
+namespace UnityExtras.Events.Editor
 {
-    [CustomEditor(typeof(OnEvent))]
+    [CustomEditor(typeof(MonoEvent))]
     [CanEditMultipleObjects]
-    public class OnEventEditor : UnityEditor.Editor
+    public class MonoEventEditor : UnityEditor.Editor
     {
         private SerializedProperty _eventTrigger;
         private SerializedProperty _checkTag;
@@ -28,20 +29,21 @@ namespace UnityExtras.Editor
 
         private void OnEnable()
         {
-            var onEvent = target as OnEvent;
-            _eventTrigger = serializedObject.FindAutoProperty(nameof(onEvent.eventTrigger));
-            _checkTag = serializedObject.FindAutoProperty(nameof(onEvent.checkTag));
-            _collisionTag = serializedObject.FindAutoProperty(nameof(onEvent.collisionTag));
-            _collisionForce = serializedObject.FindAutoProperty(nameof(onEvent.collisionForce));
-            _triggerOnce = serializedObject.FindAutoProperty(nameof(onEvent.triggerOnce));
+            var monoEvent = target as MonoEvent;
 
-            _unityEvent = serializedObject.FindAutoProperty(nameof(onEvent.unityEvent));
-            _colliderEvent = serializedObject.FindAutoProperty(nameof(onEvent.colliderEvent));
-            _collider2DEvent = serializedObject.FindAutoProperty(nameof(onEvent.collider2DEvent));
-            _collisionEvent = serializedObject.FindAutoProperty(nameof(onEvent.collisionEvent));
-            _collision2DEvent = serializedObject.FindAutoProperty(nameof(onEvent.collision2DEvent));
+            _eventTrigger = serializedObject.FindAutoProperty(nameof(monoEvent.eventTrigger));
+            _checkTag = serializedObject.FindAutoProperty(nameof(monoEvent.checkTag));
+            _collisionTag = serializedObject.FindAutoProperty(nameof(monoEvent.collisionTag));
+            _collisionForce = serializedObject.FindAutoProperty(nameof(monoEvent.collisionForce));
+            _triggerOnce = serializedObject.FindAutoProperty(nameof(monoEvent.triggerOnce));
 
-            _sendDebugMessage = serializedObject.FindAutoProperty(nameof(onEvent.sendDebugMessage));
+            _unityEvent = serializedObject.FindAutoProperty(nameof(monoEvent.unityEvent));
+            _colliderEvent = serializedObject.FindAutoProperty(nameof(monoEvent.colliderEvent));
+            _collider2DEvent = serializedObject.FindAutoProperty(nameof(monoEvent.collider2DEvent));
+            _collisionEvent = serializedObject.FindAutoProperty(nameof(monoEvent.collisionEvent));
+            _collision2DEvent = serializedObject.FindAutoProperty(nameof(monoEvent.collision2DEvent));
+
+            _sendDebugMessage = serializedObject.FindAutoProperty(nameof(monoEvent.sendDebugMessage));
 
             UpdateVisibility();
         }
@@ -85,35 +87,35 @@ namespace UnityExtras.Editor
         {
             switch (_eventTrigger.enumValueIndex)
             {
-                case (int)OnEvent.EventTrigger.OnTriggerEnter:
-                case (int)OnEvent.EventTrigger.OnTriggerStay:
-                case (int)OnEvent.EventTrigger.OnTriggerExit:
+                case (int)MonoEvent.MonoEventTrigger.OnTriggerEnter:
+                case (int)MonoEvent.MonoEventTrigger.OnTriggerStay:
+                case (int)MonoEvent.MonoEventTrigger.OnTriggerExit:
                     showTagFields = true;
                     showCollisionFields = false;
                     currentEvent = _colliderEvent;
                     break;
-                case (int)OnEvent.EventTrigger.OnTriggerEnter2D:
-                case (int)OnEvent.EventTrigger.OnTriggerStay2D:
-                case (int)OnEvent.EventTrigger.OnTriggerExit2D:
+                case (int)MonoEvent.MonoEventTrigger.OnTriggerEnter2D:
+                case (int)MonoEvent.MonoEventTrigger.OnTriggerStay2D:
+                case (int)MonoEvent.MonoEventTrigger.OnTriggerExit2D:
                     showTagFields = true;
                     showCollisionFields = false;
                     currentEvent = _collider2DEvent;
                     break;
-                case (int)OnEvent.EventTrigger.OnCollisionEnter:
-                case (int)OnEvent.EventTrigger.OnCollisionStay:
-                case (int)OnEvent.EventTrigger.OnCollisionExit:
+                case (int)MonoEvent.MonoEventTrigger.OnCollisionEnter:
+                case (int)MonoEvent.MonoEventTrigger.OnCollisionStay:
+                case (int)MonoEvent.MonoEventTrigger.OnCollisionExit:
                     showTagFields = true;
                     showCollisionFields = true;
                     currentEvent = _collisionEvent;
                     break;
-                case (int)OnEvent.EventTrigger.OnCollisionEnter2D:
-                case (int)OnEvent.EventTrigger.OnCollisionStay2D:
-                case (int)OnEvent.EventTrigger.OnCollisionExit2D:
+                case (int)MonoEvent.MonoEventTrigger.OnCollisionEnter2D:
+                case (int)MonoEvent.MonoEventTrigger.OnCollisionStay2D:
+                case (int)MonoEvent.MonoEventTrigger.OnCollisionExit2D:
                     showTagFields = true;
                     showCollisionFields = true;
                     currentEvent = _collision2DEvent;
                     break;
-                case (int)OnEvent.EventTrigger.None:
+                case (int)MonoEvent.MonoEventTrigger.None:
                     showTagFields = false;
                     showCollisionFields = false;
                     currentEvent = null;

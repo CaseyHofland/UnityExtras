@@ -1,0 +1,11 @@
+﻿<docs>
+    <CharacterMover2D>
+        <summary>
+            Easily move a <see cref="CharacterController2D"/> through simple methods.
+        </summary>
+    </CharacterMover2D>
+    <Turn>
+        <summary>Rotate the character to face either left or right.</summary>
+        <param name="faceRight">If the character should face right. Faces left otherwise.</param>
+    </Turn>
+</docs>

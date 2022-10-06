@@ -1,0 +1,16 @@
+﻿<docs>
+    <IgnoreCollision>
+        <summary>
+            Makes the collision detection system ignore all collisionstriggers between <paramref name="rigidbody"/> and <paramref name="collider"/>.
+        </summary>
+        <param name="ignore">Wether collisionstriggers between <paramref name="rigidbody"/> and <paramref name="collider"/> should be ignored or not.</param>
+    </IgnoreCollision>
+    <IgnoreCollision1>
+        <summary>
+            Makes the collision detection system ignore all collisionstriggers between <paramref name="rigidbody1"/> and <paramref name="rigidbody2"/>.
+        </summary>
+        <param name="ignore">
+            Wether collisionstriggers between <paramref name="rigidbody1"/> and <paramref name="rigidbody2"/> should be ignored or not.
+        </param>
+    </IgnoreCollision1>
+</docs>

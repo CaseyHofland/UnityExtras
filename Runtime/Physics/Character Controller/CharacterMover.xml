@@ -1,0 +1,12 @@
+﻿<docs>
+    <CharacterMover>
+        <summary>
+            Easily move a <see cref="CharacterController"/> through simple methods.
+        </summary>
+    </CharacterMover>
+    <Turn>
+        <summary>Rotate the character around the given axis (left and right by default).</summary>
+        <param name="axis">The axis to rotate the character around.</param>
+        <param name="turnFactor">The factor by which to rotate the character based on their <see cref="rotationSpeed">rotation speed</see>.</param>
+    </Turn>
+</docs>
