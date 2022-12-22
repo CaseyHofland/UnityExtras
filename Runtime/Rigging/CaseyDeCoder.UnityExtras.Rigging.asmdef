@@ -1,0 +1,25 @@
+{
+    "name": "CaseyDeCoder.UnityExtras.Rigging",
+    "rootNamespace": "UnityExtras.Rigging",
+    "references": [
+        "GUID:806b0a144ac65a74899d99f880ae9914",
+        "GUID:7f7d1af65c2641843945d409d28f2e20"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "ANIMATION_RIGGING_1_2_OR_NEWER"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.animation.rigging",
+            "expression": "1.2",
+            "define": "ANIMATION_RIGGING_1_2_OR_NEWER"
+        }
+    ],
+    "noEngineReferences": false
+}
