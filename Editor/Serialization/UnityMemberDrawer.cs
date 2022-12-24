@@ -66,14 +66,14 @@ namespace UnityExtras.Editor
             position.width -= 2f;
             using (var dropdownDisabledGroup = new EditorGUI.DisabledGroupScope(_target.objectReferenceValue == null))
             {
-                var unityMember = property.GetValue<UnityMember>();
+                var unityMember = ((PropertyMember)property).GetValue<UnityMember>();
 
                 var dropdownContent = _target.objectReferenceValue != null && unityMember.memberInfo != null
                     ? new GUIContent($"{_target.objectReferenceValue.GetType().Name}.{unityMember.memberInfo.Name}")
                     : new GUIContent(noFunction);
                 if (EditorGUI.DropdownButton(position, dropdownContent, FocusType.Passive, EditorStyles.popup))
                 {
-                    BuildPopulList(_target.objectReferenceValue!, string.IsNullOrEmpty(_moduleName.stringValue) && _metadataToken.intValue == default, Unselected, (MemberTypes)_memberTypes.enumValueFlag, (BindingFlags)_bindingFlags.enumValueFlag, ValidMember, On, Selected).DropDown(position);
+                    BuildPopupList(_target.objectReferenceValue!, string.IsNullOrEmpty(_moduleName.stringValue) && _metadataToken.intValue == default, Unselected, (MemberTypes)_memberTypes.enumValueFlag, (BindingFlags)_bindingFlags.enumValueFlag, ValidMember, On, Selected).DropDown(position);
 
                     bool ValidMember(MemberInfo member)
                     {
@@ -109,7 +109,7 @@ namespace UnityExtras.Editor
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label) => reorderableList.GetHeight() - reorderableList.footerHeight;
 
-        private static GenericMenu BuildPopulList(object target, bool off, Action unselected, MemberTypes memberTypes, BindingFlags bindingFlags, Predicate<MemberInfo> valid, Predicate<MemberInfo> on, Action<object, MemberInfo> selected)
+        private static GenericMenu BuildPopupList(object target, bool off, Action unselected, MemberTypes memberTypes, BindingFlags bindingFlags, Predicate<MemberInfo> valid, Predicate<MemberInfo> on, Action<object, MemberInfo> selected)
         {
             var menu = new GenericMenu();
             menu.AddItem(new GUIContent(noFunction), off, () => unselected());

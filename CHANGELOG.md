@@ -4,6 +4,22 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2022-12-24
+### Added
+- Add IKPlanter, a component that uses the Animation Rigging package to e.g. plant feet on the ground, or hands on objects.
+- Add FocusPointConstraint and FocusPoint, which together with the Animation Rigging package create a system for having the character look at objects in your world.
+- Add LinkPropertyAttribute, an attribute that allows you to link a field to a property. See 82134a1d97277d5010a39289bc09be8edc3d0004 for an example of how to use it.
+- Add CenterOfMass, a component that allows you to offset a Rigidbodies center of mass.
+- Add PointEffector, a 3D equivalent of PointEffector2D.
+- Add SurfaceEffector, a 2D equivalent of SurfaceEffector2D.
+- Add PropertyMember for Editor functionality. SerializedProperty.GetPropertyMember returns a PropertyMember that holds the reflected member and target of the property, as well as its parents, allowing you to set its value or get its type using reflection.
+
+### Removed
+- SerializedPropertyExtensions.GetMember, -.GetField, -.GetProperty, -.GetValue, -.SetValue, -.GetSanitizedPropertyType have all been removed in favor of the new PropertyMember class.
+
+### Fixed
+- ValueRef now inherits from UnityMember to fix a few inspector issues, as well as standardize its implementation.
+
 ## [1.1.0] - 2022-10-06
 ### Added
 - Add a Reset item to the contextual property menu. This allows you to reset properties by right-clicking and selecting "Reset".

@@ -73,7 +73,7 @@ namespace UnityExtras.Editor
                 {
 					if (isPicking)
                     {
-						var serializedPropertyType = property.GetSerializedPropertyType();
+						var serializedPropertyType = property.GetPropertyMember().GetMemberType();
 						if (serializedPropertyType != null)
                         {
 							objectPicker.pickerType = serializedPropertyType;
