@@ -1,9 +1,8 @@
 ﻿#nullable enable
+using System.Runtime.CompilerServices;
 using UnityEngine;
-using Unity.Mathematics;
 
 using static UnityEngine.Mathf;
-using System.Runtime.CompilerServices;
 
 namespace UnityExtras
 {
@@ -45,13 +44,13 @@ namespace UnityExtras
 
         /// <include file='./ExtraMath.xml' path='docs/FetchRotation2D/*'/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static float FetchRotation2D(quaternion quaternion)
+        public static float FetchRotation2D(Quaternion quaternion)
         {
             const float Rot2Rot2D = 2f * Rad2Deg;
 
-            return Rot2Rot2D * (quaternion.value.w < 0f
-                ? math.atan2(-quaternion.value.z, -quaternion.value.w)
-                : math.atan2(quaternion.value.z, quaternion.value.w));
+            return Rot2Rot2D * (quaternion.w < 0f
+                ? Atan2(-quaternion.z, -quaternion.w)
+                : Atan2(quaternion.z, quaternion.w));
         }
     }
 }
