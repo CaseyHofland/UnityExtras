@@ -48,7 +48,7 @@ namespace UnityExtras.InputSystem.Editor
                 property.serializedObject.ApplyModifiedProperties();
             }
 
-            var processor = property.GetValue<Processor>();
+            var processor = ((PropertyMember)property).GetValue<Processor>();
             property.isExpanded = processor.inputProcessor?.GetType().GetFields().Length > 0
                 && EditorGUI.Foldout(position, property.isExpanded, label, true);
             if (property.isExpanded)
@@ -108,7 +108,7 @@ namespace UnityExtras.InputSystem.Editor
 
             if (property.isExpanded)
             {
-                height += (EditorGUIUtility.singleLineHeight + 2f) * property.GetValue<Processor>().inputProcessor?.GetType().GetFields().Length ?? 0;
+                height += (EditorGUIUtility.singleLineHeight + 2f) * ((PropertyMember)property).GetValue<Processor>().inputProcessor?.GetType().GetFields().Length ?? 0;
             }
 
             return height;

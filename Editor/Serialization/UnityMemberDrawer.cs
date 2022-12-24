@@ -66,7 +66,7 @@ namespace UnityExtras.Editor
             position.width -= 2f;
             using (var dropdownDisabledGroup = new EditorGUI.DisabledGroupScope(_target.objectReferenceValue == null))
             {
-                var unityMember = property.GetValue<UnityMember>();
+                var unityMember = ((PropertyMember)property).GetValue<UnityMember>();
 
                 var dropdownContent = _target.objectReferenceValue != null && unityMember.memberInfo != null
                     ? new GUIContent($"{_target.objectReferenceValue.GetType().Name}.{unityMember.memberInfo.Name}")

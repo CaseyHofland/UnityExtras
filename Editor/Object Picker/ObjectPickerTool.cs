@@ -89,10 +89,11 @@ namespace UnityExtras.Editor
 				return false;
             }
 
-			var propType = property.GetSerializedPropertyType();
-			if (propType != typeof(Object)
-				&& !typeof(GameObject).IsAssignableFrom(propType)
-				&& !typeof(Component).IsAssignableFrom(propType))
+			var propertyType = property.GetPropertyMember().GetMemberType();
+            if (propertyType != typeof(Object)
+				&& !typeof(Transform).IsAssignableFrom(propertyType)
+				&& !typeof(GameObject).IsAssignableFrom(propertyType)
+				&& !typeof(Component).IsAssignableFrom(propertyType))
             {
 				return false;
             }
