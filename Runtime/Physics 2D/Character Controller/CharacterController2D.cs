@@ -1,4 +1,5 @@
 #nullable enable
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace UnityExtras
@@ -80,10 +81,11 @@ namespace UnityExtras
         }
 
         private RaycastHit2D[] _results = new RaycastHit2D[1];
-        private RaycastHit2D hit => _results[0];
 
         public const float contactOffset = 0.01f;
         public float contactOffsetCompensation => Physics2D.defaultContactOffset - contactOffset;
+
+        private List<RaycastHit2D> _newResults = new();
 
         #region IAuthor Methods
         [field: SerializeField][field: HideInInspector] bool IAuthor.isDeserializing { get; set; }
@@ -197,13 +199,36 @@ namespace UnityExtras
         #endregion
 
         #region Controller Methods
-        public bool Cast(Vector2 direction, RaycastHit2D[] results, float distance) => Cast(capsuleCollider2D.bounds.center, direction, results, distance);
-        private bool Cast(Vector2 origin, Vector2 direction, RaycastHit2D[] results, float distance)
+        //public bool Cast(Vector2 direction, RaycastHit2D[] results, float distance) => Cast(capsuleCollider2D.bounds.center, direction, results, distance);
+        //private bool Cast(Vector2 origin, Vector2 direction, RaycastHit2D[] results, float distance)
+        //{
+        //    capsuleCollider2D.enabled = false;
+        //    var hasHit = Physics2D.CapsuleCastNonAlloc(origin, capsuleCollider2D.size - (contactOffsetCompensation * 2f) * Vector2.one, capsuleCollider2D.direction, transform.eulerAngles.z, direction, results, distance, Physics2D.GetLayerCollisionMask(gameObject.layer)) > 0;
+        //    capsuleCollider2D.enabled = detectCollisions;
+        //    return hasHit;
+        //}
+
+        public bool Cast(Vector2 direction, out RaycastHit2D result, float distance) => Cast(capsuleCollider2D.bounds.center, direction, out result, distance);
+        private bool Cast(Vector2 origin, Vector2 direction, out RaycastHit2D result, float distance)
         {
             capsuleCollider2D.enabled = false;
-            var hasHit = Physics2D.CapsuleCastNonAlloc(origin, capsuleCollider2D.size - (contactOffsetCompensation * 2f) * Vector2.one, capsuleCollider2D.direction, transform.eulerAngles.z, direction, results, distance, Physics2D.GetLayerCollisionMask(gameObject.layer)) > 0;
+
+            var hits = Physics2D.CapsuleCast(origin, capsuleCollider2D.size - (contactOffsetCompensation * 2f) * Vector2.one, capsuleCollider2D.direction, transform.eulerAngles.z, direction, new ContactFilter2D { layerMask = Physics2D.GetLayerCollisionMask(gameObject.layer), useLayerMask = true }, _newResults, distance);
+
             capsuleCollider2D.enabled = detectCollisions;
-            return hasHit;
+
+            for (int i = 0; i < hits; i++)
+            {
+                result = _newResults[i];
+
+                if (!Physics2D.GetIgnoreCollision(result.collider, capsuleCollider2D))
+                {
+                    return true;
+                }
+            }
+
+            result = default;
+            return false;
         }
 
 
@@ -269,23 +294,23 @@ namespace UnityExtras
                 enableOverlapRecovery = false;
                 motion.x = Collide(horizontalMotion, right, CollisionFlags.Sides, CollisionFlags.Sides, out horizontalHit);
                 enableOverlapRecovery = tmp;
-                if (!newCollisionFlags.HasFlag(CollisionFlags.Sides) || hit.distance == 0f)
+                if (!newCollisionFlags.HasFlag(CollisionFlags.Sides) || horizontalHit!.Value.distance == 0f)
                 {
                     return 0f;
                 }
 
 
                 // Define the cast distance and the cast origin taking ceilings into account. If we don't hit something or are overlapping take an early out.
-                var centroid = hit.centroid;
-                var castDistance = Cast(up, _results, stepOffset) ? Mathf.Max(hit.distance - skinWidth, 0f) : stepOffset;
+                var centroid = horizontalHit!.Value.centroid;
+                var castDistance = Cast(up, out var hitInfo, stepOffset) ? Mathf.Max(horizontalHit!.Value.distance - skinWidth, 0f) : stepOffset;
                 var castOrigin = centroid + horizontalMotion * right + castDistance * up;
-                if (!Cast(castOrigin, -up, _results, castDistance) || hit.distance == 0f)
+                if (!Cast(castOrigin, -up, out var someHit, castDistance) || horizontalHit!.Value.distance == 0f)
                 {
                     return 0f;
                 }
 
                 // Calculate the resulting motion of climbing the step / slope.
-                var stepMotion = ExtraMath.Rotate2D(hit.centroid - centroid, -ExtraMath.Angle(right)) + skinWidth * up;
+                var stepMotion = ExtraMath.Rotate2D(horizontalHit!.Value.centroid - centroid, -ExtraMath.Angle(right)) + skinWidth * up;
 
                 // Perform a slope check using a separate ray for complete angle accurracy (casting with a capsule may produce incorrect normals). If the slope is too steep to climb take an early out.
                 castOrigin += radius * Mathf.Sign(horizontalMotion) * right;
@@ -293,7 +318,7 @@ namespace UnityExtras
                 var hasHit = Physics2D.RaycastNonAlloc(castOrigin, -up, _results, castDistance + height * 0.5f - skinWidth - contactOffsetCompensation, Physics2D.GetLayerCollisionMask(gameObject.layer)) > 0;
                 capsuleCollider2D.enabled = detectCollisions;
 
-                if (hasHit && Vector2.Angle(up, hit.normal) > slopeLimit + Vector2.kEpsilon)
+                if (hasHit && Vector2.Angle(up, horizontalHit!.Value.normal) > slopeLimit + Vector2.kEpsilon)
                 {
                     return 0f;
                 }
@@ -311,21 +336,21 @@ namespace UnityExtras
 
                 // Check if we are colliding with anything.
                 var sign = (float)System.Math.Sign(motion);
-                if (sign == 0f || !Cast(origin, direction *= sign, _results, skinWidth + Mathf.Abs(motion)) || Vector2.Dot(hit.normal, direction) >= 0f)
+                if (sign == 0f || !Cast(origin, direction *= sign, out var someHit, skinWidth + Mathf.Abs(motion)) || Vector2.Dot(someHit.normal, direction) >= 0f)
                 {
                     return motion;
                 }
 
                 // Check if we are overlapping with anything (and if we should recover from it).
-                if (hit.distance == 0f)
+                if (someHit.distance == 0f)
                 {
                     if (enableOverlapRecovery)
                     {
                         // Magic formula to find the contact offset-independent point of collision.
-                        var point = hit.point + (contactOffset * 0.5f + 0.001f + contactOffsetCompensation) * direction;
+                        var point = someHit.point + (contactOffset * 0.5f + 0.001f + contactOffsetCompensation) * direction;
 
                         // Resolve the overlap.
-                        var pointDistance = (hit.centroid - point).magnitude;
+                        var pointDistance = (someHit.centroid - point).magnitude;
                         if (pointDistance >= height * 0.25f - Vector2.kEpsilon)
                         {
                             var overlapDistance = (height * 0.5f - pointDistance) * 2f;
@@ -338,9 +363,9 @@ namespace UnityExtras
                 }
 
                 // If we are colliding and not overlapping, send out a hit message, add the collision to the collisionFlags and return a motion that doesn't penetrate the collider.
-                raycastHit = hit;
+                raycastHit = someHit;
                 newCollisionFlags |= sign == 1 ? positiveCollisionFlag : negativeCollisionFlag;
-                return Mathf.Max(hit.distance - skinWidth, 0f) * sign;
+                return Mathf.Max(someHit.distance - skinWidth, 0f) * sign;
             }
         }
 
