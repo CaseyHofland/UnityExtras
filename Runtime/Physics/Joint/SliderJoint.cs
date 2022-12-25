@@ -57,7 +57,7 @@ namespace UnityExtras
             }
             set
             {
-                var a = Quaternion.Inverse(rigidbody.rotation) * (_angle = value);
+                var a = (_angle = value);
                 configurableJoint.axis = a * Vector3.right;
                 configurableJoint.secondaryAxis = a * Vector3.up;
 

@@ -135,9 +135,9 @@ namespace UnityExtras.Editor
 
             Handles.color = Color.blue;
             var size = HandleUtility.GetHandleSize(anchorPosition) * 0.1f + 0.01f;
-            Handles.FreeMoveHandle(anchorPosition, sliderJoint.transform.rotation, size, default, Handles.SphereHandleCap);
+            Handles.FreeMoveHandle(anchorPosition, size, default, Handles.SphereHandleCap);
             size = HandleUtility.GetHandleSize(connectedAnchorPosition) * 0.1f + 0.01f;
-            Handles.FreeMoveHandle(connectedAnchorPosition, sliderJoint.connectedBody?.rotation ?? Quaternion.identity, size, default, Handles.SphereHandleCap);
+            Handles.FreeMoveHandle(connectedAnchorPosition, size, default, Handles.SphereHandleCap);
 
             Handles.color = Color.green;
             Handles.DrawAAPolyLine(anchorPosition, connectedAnchorPosition);

@@ -145,7 +145,7 @@ namespace UnityExtras
             Debug.LogWarning($"Standardize hit results searching, taking IgnoreCollision into account.");
         }
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && !UNITY_2022_2_OR_NEWER
         private void OnDrawGizmos()
         {
             if (Physics2D.alwaysShowColliders)
