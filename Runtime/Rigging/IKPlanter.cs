@@ -13,7 +13,9 @@ namespace UnityExtras.Rigging
         public Transform tip => twoBoneIKConstraint.data.tip;
         public Transform target => twoBoneIKConstraint.data.target;
 
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         [field: SerializeField] public Transform constraint { get; set; }
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         [field: SerializeField] public Direction solverDirection { get; set; } = new();
         [field: SerializeField] public float rayStep { get; set; } = 0.5f;
         [field: SerializeField] public float rayDip { get; set; } = 0.1f;
