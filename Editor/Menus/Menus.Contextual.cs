@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UnityExtras.Editor
 {
-    public class ContextualMenus
+    public static partial class Menus
     {
 		[InitializeOnLoadMethod]
 		private static void InitializeContextualMenus()
