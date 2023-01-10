@@ -24,12 +24,14 @@ namespace UnityExtras.Editor
         public PropertyMember(MemberInfo memberInfo, object target, int index) : this(memberInfo, target) => this.index = index;
         public PropertyMember(PropertyMember? parent, MemberInfo memberInfo, object target, int index) : this(memberInfo, target, index) => this.parent = parent;
 
-        public T GetValue<T>() => memberInfo switch
+        public object GetValue() => memberInfo switch
         {
-            PropertyInfo propertyInfo => (T)(index == -1 ? propertyInfo.GetValue(target) : propertyInfo.GetValue(target, new object[] { index })),
-            FieldInfo fieldInfo => (T)fieldInfo.GetValue(target),
+            PropertyInfo propertyInfo => (index == -1 ? propertyInfo.GetValue(target) : propertyInfo.GetValue(target, new object[] { index })),
+            FieldInfo fieldInfo => fieldInfo.GetValue(target),
             _ => throw invalidMemberInfoException,
         };
+
+        public T GetValue<T>() => (T)GetValue();
 
         public void SetValue<T>(T value)
         {
