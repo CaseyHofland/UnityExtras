@@ -1,0 +1,14 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/overlay.uss?fileID=7433441132597879392&amp;guid=61b001e61f386684b856da432acd6d20&amp;type=3#overlay" />
+    <ui:Foldout value="true" text=" " class="unity-base-field__aligned" style="margin-top: 2px;">
+        <uie:PropertyField binding-path="parameterName" class="unity-base-field__aligned" />
+        <uie:PropertyField name="dampTime" binding-path="_dampTime" label="Damp Time" />
+        <uie:PropertyField name="hasMinMax" binding-path="_hasMinMax" label="Has Min Max" />
+        <uie:PropertyField name="min" binding-path="_min" label="Min" />
+        <uie:PropertyField binding-path="_max" label="Max" name="max" />
+    </ui:Foldout>
+    <ui:VisualElement name="value" class="unity-base-field__aligned overlay" style="align-items: stretch; justify-content: flex-start; align-self: flex-end; -unity-text-align: middle-left;">
+        <ui:FloatField label="Value" binding-path="_value" />
+        <ui:Slider picking-mode="Ignore" label="Value" show-input-field="true" high-value="1" binding-path="_value" />
+    </ui:VisualElement>
+</ui:UXML>

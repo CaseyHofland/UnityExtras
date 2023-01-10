@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/overlay.uss?fileID=7433441132597879392&amp;guid=61b001e61f386684b856da432acd6d20&amp;type=3#overlay" />
+    <ui:Foldout value="true" text=" " class="unity-base-field__aligned" style="margin-top: 2px;">
+        <uie:PropertyField binding-path="parameterName" class="unity-base-field__aligned" />
+    </ui:Foldout>
+    <ui:VisualElement name="hideSettings" class="overlay unity-base-field__aligned unity-base-field" style="background-color: rgba(0, 0, 0, 0); flex-direction: row; -unity-text-align: middle-left;">
+        <ui:Toggle label="Value" binding-path="_value" />
+    </ui:VisualElement>
+</ui:UXML>
