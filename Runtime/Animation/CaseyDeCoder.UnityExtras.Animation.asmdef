@@ -1,0 +1,24 @@
+{
+    "name": "CaseyDeCoder.UnityExtras.Animation",
+    "rootNamespace": "UnityExtras",
+    "references": [
+        "GUID:806b0a144ac65a74899d99f880ae9914"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "ANIMATION_MODULE"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.animation",
+            "expression": "1",
+            "define": "ANIMATION_MODULE"
+        }
+    ],
+    "noEngineReferences": false
+}
