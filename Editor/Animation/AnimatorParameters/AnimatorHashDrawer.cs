@@ -1,5 +1,6 @@
 #nullable enable
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 
 namespace UnityExtras.Editor
@@ -9,12 +10,9 @@ namespace UnityExtras.Editor
     {
         public override VisualElement CreatePropertyGUI(SerializedProperty property)
         {
-            var tree = ExtraEditorGUIUtility.LoadUnityExtrasUxml(nameof(AnimatorHash)).CloneTree();
-
-            var textField = tree.Q<TextField>();
-            textField.label = property.displayName;
-
-            return tree;
+            var textField = new TextField(property.displayName);
+            textField.BindProperty(property.FindPropertyRelative($"_{nameof(AnimatorHash.name)}"));
+            return textField;
         }
     }
 }
