@@ -52,5 +52,13 @@ namespace UnityExtras
                 ? Atan2(-quaternion.z, -quaternion.w)
                 : Atan2(quaternion.z, quaternion.w));
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void GetAspectRatio(in ulong width, in ulong height, out ulong unitWidth, out ulong unitHeight)
+        {
+            var divisor = (ulong)System.Numerics.BigInteger.GreatestCommonDivisor(width, height);
+            unitWidth = width / divisor;
+            unitHeight = height / divisor;
+        }
     }
 }
