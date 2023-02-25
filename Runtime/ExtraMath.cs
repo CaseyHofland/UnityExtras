@@ -60,5 +60,12 @@ namespace UnityExtras
             unitWidth = width / divisor;
             unitHeight = height / divisor;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Round(float value, uint decimals)
+        {
+            var multiplier = Pow(10f, decimals);
+            return Mathf.Round(value * multiplier) / multiplier;
+        }
     }
 }
