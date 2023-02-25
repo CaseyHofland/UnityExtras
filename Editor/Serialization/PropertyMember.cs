@@ -13,7 +13,7 @@ namespace UnityExtras.Editor
         public readonly object target;
         public readonly int index = -1;
 
-        private ArgumentException invalidMemberInfoException => new($"{memberInfo} was invalid. Should be of type {typeof(PropertyInfo)} or {typeof(FieldInfo)}.");
+        private ArgumentException invalidMemberInfoException => new($"{memberInfo} was invalid. Should be of type {typeof(PropertyInfo)} or {typeof(FieldInfo)}, but was of type {memberInfo?.GetType().ToString() ?? "NULL"}.");
 
         public PropertyMember(MemberInfo memberInfo, object target)
         {
