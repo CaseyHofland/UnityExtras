@@ -1,4 +1,5 @@
 #nullable enable
+using System.Collections;
 using UnityEngine;
 
 namespace UnityExtras
@@ -17,5 +18,15 @@ namespace UnityExtras
         public static float GetFloat(this Animator animator, FloatParameter parameter) => animator.GetFloat(parameter.parameterName);
         public static void SetFloat(this Animator animator, FloatParameter parameter) => animator.SetFloat(parameter.parameterName, parameter.value);
         public static void SetFloat(this Animator animator, FloatParameter parameter, float deltaTime) => animator.SetFloat(parameter.parameterName, parameter.value, parameter.dampTime, deltaTime);
+
+        public static IEnumerator SetFloatCoroutine(this Animator animator, FloatParameter parameter)
+        {
+            do
+            {
+                animator.SetFloat(parameter, Time.deltaTime);
+                yield return null;
+            }
+            while (!Mathf.Approximately(animator.GetFloat(parameter), parameter.value));
+        }
     }
 }

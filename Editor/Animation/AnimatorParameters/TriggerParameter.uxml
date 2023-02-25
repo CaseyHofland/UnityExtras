@@ -1,9 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
-    <Style src="project://database/Assets/overlay.uss?fileID=7433441132597879392&amp;guid=61b001e61f386684b856da432acd6d20&amp;type=3#overlay" />
-    <ui:Foldout value="true" text=" " class="unity-base-field__aligned" style="margin-top: 2px;">
+    <Style src="project://database/Packages/com.caseydecoder.unityextras/Runtime/UI%20Elements/StyleSheets/overlay.uss?fileID=7433441132597879392&amp;guid=61b001e61f386684b856da432acd6d20&amp;type=3#overlay" />
+    <ui:Foldout value="true" text=" " view-data-key="triggerParameterFoldout" class="unity-base-field__aligned" style="margin-top: 2px; width: 24px;">
         <uie:PropertyField binding-path="parameterName" class="unity-base-field__aligned" />
     </ui:Foldout>
-    <ui:VisualElement name="hideSettings" class="overlay unity-base-field__aligned unity-base-field" style="background-color: rgba(0, 0, 0, 0); flex-direction: row; -unity-text-align: middle-left;">
+    <ui:VisualElement name="hideSettings" class="overlay unity-base-field__aligned unity-base-field" style="background-color: rgba(0, 0, 0, 0); flex-direction: row; -unity-text-align: middle-left; padding-right: 16px; left: 16px;">
         <ui:Label tabindex="-1" text="Label" display-tooltip-when-elided="true" class="unity-base-field__label" />
         <ui:Button text="Set Trigger" display-tooltip-when-elided="true" name="SetTrigger" style="flex-shrink: 1; flex-grow: 1; width: 50%;" />
         <ui:Button text="Reset Trigger" display-tooltip-when-elided="true" name="ResetTrigger" style="flex-shrink: 1; flex-grow: 1; width: 50%;" />

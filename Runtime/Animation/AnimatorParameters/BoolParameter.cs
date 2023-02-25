@@ -5,10 +5,10 @@ using UnityEngine;
 namespace UnityExtras
 {
     [Serializable]
-    public struct BoolParameter : IEquatable<BoolParameter>
+    public class BoolParameter : IEquatable<BoolParameter>
     {
         [field: SerializeField] public bool hideSettings { get; private set; }
-        public event Action? onValueChanged;
+        public event Action<BoolParameter>? onValueChanged;
 
         public AnimatorHash parameterName;
         [SerializeField] private bool _value;
@@ -18,11 +18,8 @@ namespace UnityExtras
             get => _value;
             set
             {
-                if (_value != value)
-                {
-                    _value = value;
-                    onValueChanged?.Invoke();
-                }
+                _value = value;
+                onValueChanged?.Invoke(this);
             }
         }
 

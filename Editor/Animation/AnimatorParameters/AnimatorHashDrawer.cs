@@ -12,6 +12,7 @@ namespace UnityExtras.Editor
         {
             var textField = new TextField(property.displayName);
             textField.BindProperty(property.FindPropertyRelative($"_{nameof(AnimatorHash.name)}"));
+            textField.AddToClassList(TextField.alignedFieldUssClassName);
             return textField;
         }
     }

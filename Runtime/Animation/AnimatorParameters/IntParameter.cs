@@ -5,10 +5,10 @@ using UnityEngine;
 namespace UnityExtras
 {
     [Serializable]
-    public struct IntParameter : IEquatable<IntParameter>
+    public class IntParameter : IEquatable<IntParameter>
     {
         [field: SerializeField] public bool hideSettings { get; private set; }
-        public event Action? onValueChanged;
+        public event Action<IntParameter>? onValueChanged;
 
         public AnimatorHash parameterName;
         [SerializeField, LinkProperty(nameof(value))] private int _value;
@@ -21,12 +21,8 @@ namespace UnityExtras
             get => _value;
             set
             {
-                var oldValue = _value;
                 _value = hasMinMax ? Mathf.Clamp(value, min, max) : value;
-                if (oldValue != _value)
-                {
-                    onValueChanged?.Invoke();
-                }
+                onValueChanged?.Invoke(this);
             }
         }
 

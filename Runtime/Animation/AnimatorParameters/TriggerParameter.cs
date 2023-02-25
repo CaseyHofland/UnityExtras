@@ -5,7 +5,7 @@ using UnityEngine;
 namespace UnityExtras
 {
     [Serializable]
-    public struct TriggerParameter : IEquatable<TriggerParameter>
+    public class TriggerParameter : IEquatable<TriggerParameter>
     {
         [field: SerializeField] public bool hideSettings { get; private set; }
 
