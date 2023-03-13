@@ -13,12 +13,10 @@ namespace UnityExtras
         {
             public Texture texture;
             public GameObject prefab;
-            [Min(0f)] public float destroyDelay;
         }
 
         public List<Wrapper> texturePrefabs = new();
         public GameObject? prefab;
-        [Min(0f)] public float destroyDelay;
 
         RaycastHit IDataReceiver<RaycastHit>.value { set => hit = value; }
         Texture? IDataReceiver<Texture?>.value { set => hitTexture = value; }
@@ -32,11 +30,6 @@ namespace UnityExtras
             {
                 var wrapperIndex = texturePrefabs.FindIndex(wrapper => wrapper.texture == hitTexture);
                 var instance = Instantiate(wrapperIndex == -1 ? prefab : texturePrefabs[wrapperIndex].prefab, hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
-                var destroyDelay = wrapperIndex == -1 ? this.destroyDelay : texturePrefabs[wrapperIndex].destroyDelay;
-                if (destroyDelay > 0f)
-                {
-                    Destroy(instance, destroyDelay);
-                }
             }
 
             base.Play(listener);
