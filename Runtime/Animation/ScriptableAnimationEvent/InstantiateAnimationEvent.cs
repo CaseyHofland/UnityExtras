@@ -11,10 +11,10 @@ namespace UnityExtras
         public Quaternion rootOrbit = Quaternion.identity;
         public bool asChild;
 
-        public override void Play(ScriptableAnimationEventListener listener)
+        public override void Play(ScriptableAnimationEventListener listener, AnimationEvent animationEvent)
         {
             var instance = Instantiate(prefab, listener.transform.position + rootOffset, listener.transform.rotation * rootOrbit, asChild ? listener.transform : null);
-            base.Play(listener);
+            base.Play(listener, animationEvent);
         }
     }
 }

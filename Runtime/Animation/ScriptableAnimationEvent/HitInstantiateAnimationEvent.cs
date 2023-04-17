@@ -24,7 +24,7 @@ namespace UnityExtras
         private RaycastHit hit;
         private Texture? hitTexture;
 
-        public override void Play(ScriptableAnimationEventListener listener)
+        public override void Play(ScriptableAnimationEventListener listener, AnimationEvent animationEvent)
         {
             if (hit.collider != null)
             {
@@ -32,7 +32,7 @@ namespace UnityExtras
                 var instance = Instantiate(wrapperIndex == -1 ? prefab : texturePrefabs[wrapperIndex].prefab, hit.point, Quaternion.FromToRotation(Vector3.up, hit.normal));
             }
 
-            base.Play(listener);
+            base.Play(listener, animationEvent);
         }
     }
 }

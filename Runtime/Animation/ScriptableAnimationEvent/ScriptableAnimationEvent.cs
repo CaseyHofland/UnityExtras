@@ -12,13 +12,13 @@ namespace UnityExtras
     {
         public List<ScriptableAnimationEvent?> childEvents = new();
 
-        public virtual void Play(ScriptableAnimationEventListener listener)
+        public virtual void Play(ScriptableAnimationEventListener listener, AnimationEvent animationEvent)
         {
-            foreach (var @event in childEvents)
+            foreach (var scriptableAnimationEvent in childEvents)
             {
-                if (@event != null)
+                if (scriptableAnimationEvent != null)
                 {
-                    @event.Play(listener);
+                    scriptableAnimationEvent.Play(listener, animationEvent);
                 }
             }
         }

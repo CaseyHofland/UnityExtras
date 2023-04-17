@@ -13,7 +13,7 @@ namespace UnityExtras
         [field: SerializeField] public LayerMask layerMask { get; set; } = ~0;
         [field: SerializeField] public QueryTriggerInteraction queryTriggerInteraction = QueryTriggerInteraction.Ignore;
 
-        public override void Play(ScriptableAnimationEventListener listener)
+        public override void Play(ScriptableAnimationEventListener listener, AnimationEvent animationEvent)
         {
             Texture? hitTexture = null;
 
@@ -76,7 +76,7 @@ namespace UnityExtras
             }
 
             // Continue playing the event.
-            base.Play(listener);
+            base.Play(listener, animationEvent);
         }
     }
 }
