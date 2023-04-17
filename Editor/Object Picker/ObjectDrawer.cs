@@ -73,16 +73,20 @@ namespace UnityExtras.Editor
                 {
 					if (isPicking)
                     {
-						var serializedPropertyType = property.GetPropertyMember().GetMemberType();
-						if (serializedPropertyType != null)
+                        var propertyMember = property.GetPropertyMember();
+                        if (propertyMember.memberInfo != null)
                         {
-							objectPicker.pickerType = serializedPropertyType;
-							ToolManager.SetActiveTool(objectPicker);
-							objectPicker.selected += obj =>
-							{
-								property.objectReferenceValue = obj;
-								property.serializedObject.ApplyModifiedProperties();
-							};
+                            var serializedPropertyType = propertyMember.GetMemberType();
+                            if (serializedPropertyType != null)
+                            {
+                                objectPicker.pickerType = serializedPropertyType;
+                                ToolManager.SetActiveTool(objectPicker);
+                                objectPicker.selected += obj =>
+                                {
+                                    property.objectReferenceValue = obj;
+                                    property.serializedObject.ApplyModifiedProperties();
+                                };
+                            }
                         }
 					}
 					else

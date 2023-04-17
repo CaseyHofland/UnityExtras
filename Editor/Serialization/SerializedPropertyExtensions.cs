@@ -27,13 +27,12 @@ namespace UnityExtras.Editor
                 if (target is IList list
 					&& path.StartsWith("Array.data["))
 				{
-                    //var digitStart = path.IndexOf('[') + 1;
-
 					const int digitStart = 11; // Taken from "Array.data[".Length;
                     var digitEnd = digitStart + path[digitStart..].IndexOf(']');
 
                     var index = Convert.ToInt32(path[digitStart..digitEnd].ToString());
 					parent = new PropertyMember(parent, target.GetType().GetProperty("Item"), target, index);
+
                     return digitEnd + 2 >= path.Length ? parent : GetPropertyMember(path[(digitEnd + 2)..], list[index], parent);
                 }
                 else

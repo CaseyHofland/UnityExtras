@@ -84,12 +84,19 @@ namespace UnityExtras.Editor
 
 		public static bool CanPickProperty(SerializedProperty property)
 		{
-			if (property == null || property.propertyType != SerializedPropertyType.ObjectReference)
+			if (property == null 
+				|| property.propertyType != SerializedPropertyType.ObjectReference)
             {
 				return false;
             }
 
-			var propertyType = property.GetPropertyMember().GetMemberType();
+			var propertyMember = property.GetPropertyMember();
+			if (propertyMember.memberInfo == null)
+			{ 
+				return false; 
+			}
+
+            var propertyType = propertyMember.GetMemberType();
             if (propertyType != typeof(Object)
 				&& !typeof(Transform).IsAssignableFrom(propertyType)
 				&& !typeof(GameObject).IsAssignableFrom(propertyType)

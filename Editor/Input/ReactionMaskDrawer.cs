@@ -53,7 +53,7 @@ namespace UnityExtras.InputSystem.Editor
 
                 var interactionNames = InputSystem.ListInteractions().ToArray();
                 var interactionTypes = Array.ConvertAll(interactionNames, interactionName => InputSystem.TryGetInteraction(interactionName));
-                
+
                 var addedInteractionTypes = _interactionTypes.GetPropertyMember().GetValue<string[]>();
 
                 for (int i = 0; i < interactionNames.Length; i++)
