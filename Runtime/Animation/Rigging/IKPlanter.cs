@@ -60,6 +60,11 @@ namespace UnityExtras.Rigging
         public void CreateRigCollisionModel()
         {
             var rigBuilder = GetComponentInParent<RigBuilder>();
+            if (rigBuilder == null)
+            {
+                return;
+            }
+
             rigBuilder.GetComponentsInChildren(true, rigidbodies);
             if (rigidbodies.Count == 0)
             {
