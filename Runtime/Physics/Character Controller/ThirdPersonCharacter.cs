@@ -24,13 +24,13 @@ namespace UnityExtras
             direction = Orientate(direction);
 
             characterMover.Move(direction, sprintReaction.reaction ?? false);
-            Turn(direction);
+            characterMover.TurnTowards(direction, steeringErrorMargin);
         }
 
         #region Orientation
         [field: Header("Orientation")]
         [field: SerializeField] public Transform? orientationPoint { get; set; }
-        [field: SerializeField, Range(0f, 180f)] public float minimumTurnAngle { get; set; } = 2f;
+        [field: SerializeField, Range(0f, 180f)] public float steeringErrorMargin { get; set; } = 2f;
 
         public Vector3 Orientate(Vector3 direction)
         {
@@ -42,15 +42,6 @@ namespace UnityExtras
             var planarDirection = Vector3.ProjectOnPlane(orientationPoint.forward, transform.up);
             var planarRotation = Quaternion.LookRotation(planarDirection != Vector3.zero ? planarDirection : Vector3.forward, transform.up);
             return planarRotation * direction;
-        }
-
-        public void Turn(Vector3 moveDirection)
-        {
-            var signedAngle = Vector3.SignedAngle(transform.forward, moveDirection, transform.up);
-            if (Mathf.Abs(signedAngle) > minimumTurnAngle)
-            {
-                characterMover.Turn(Mathf.Sign(signedAngle));
-            }
         }
         #endregion
     }
