@@ -47,11 +47,13 @@ namespace UnityExtras
 
         private bool _fastFalling => _currentFastFallBuffer < 0f;
 
-        private float _currentGravityScale => characterIsGrounded || _smoothGravity.normalized == _gravityDirection
+        private float _currentGravityScale => characterIsGrounded || !isJumping
             ? gravityScale
             : _jumpGravityScale * (_fastFalling ? fastFallRatio : 1f);
         private float _currentGravityForce => _currentGravityScale * _gravityForce;
         private Vector3 _gravity => _currentGravityScale * physicsGravity;
+
+        public bool isJumping => _smoothGravity.normalized != _gravityDirection;
 
         #region Dirty
         private Vector3 _lastGravity;
