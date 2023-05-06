@@ -1,0 +1,27 @@
+{
+    "name": "CaseyDeCoder.UnityExtras.RuntimeSceneSerialization.Editor",
+    "rootNamespace": "UnityExtras.RuntimeSceneSerialization.Editor",
+    "references": [
+        "GUID:3cf9982a6ed8c3e459dd853b4794bd75",
+        "GUID:5d830c52e8eb90a4d9b8f30d2ce5b7e0"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "RUNTIME_SCENE_SERIALIZATION_1_EXP_OR_NEWER"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.runtime-scene-serialization",
+            "expression": "1-exp",
+            "define": "RUNTIME_SCENE_SERIALIZATION_1_EXP_OR_NEWER"
+        }
+    ],
+    "noEngineReferences": false
+}
