@@ -15,6 +15,8 @@ namespace UnityExtras.Editor
                 rigidbody = Undo.AddComponent<Rigidbody>(characterController.gameObject);
             }
 
+            Undo.RecordObject(rigidbody, Undo.GetCurrentGroupName());
+
             rigidbody.isKinematic = true;
             rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         }
