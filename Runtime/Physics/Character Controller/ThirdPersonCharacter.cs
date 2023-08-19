@@ -24,13 +24,12 @@ namespace UnityExtras
             direction = Orientate(direction);
 
             characterMover.Move(direction, sprintReaction.reaction ?? false);
-            characterMover.TurnTowards(direction, steeringErrorMargin);
+            characterMover.TurnTowards(direction);
         }
 
         #region Orientation
         [field: Header("Orientation")]
         [field: SerializeField] public Transform? orientationPoint { get; set; }
-        [field: SerializeField, Range(0f, 180f)] public float steeringErrorMargin { get; set; } = 2f;
 
         public Vector3 Orientate(Vector3 direction)
         {

@@ -28,7 +28,7 @@ namespace UnityExtras
 
         public const float terminalVelocity = 53.0f;
 
-        public Vector3 motion { get; set; }
+        private Vector3 motion { get; set; }
         public Vector3 targetMotion { get; set; }
 
         private const float speedOffset = 0.1f;
@@ -128,7 +128,6 @@ namespace UnityExtras
 
             CalculateMotion();
             CharacterMove((motion + _smoothGravity) * Time.deltaTime);
-            targetMotion = Vector3.zero;
 
             CalculateGravity();
             UpdateJumpSettings();
@@ -149,6 +148,7 @@ namespace UnityExtras
             }
 
             motion = targetMotion.normalized * targetSpeed;
+            targetMotion = Vector3.zero;
         }
 
         private void CalculateGravity()
@@ -235,7 +235,6 @@ namespace UnityExtras
             _currentCanJumpBuffer = 1f;
             _currentCoyoteTime = 1f;
             Jump(jumpHeight);
-
         }
         #endregion
     }
