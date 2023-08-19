@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace UnityExtras
 {
+    /// <summary>
+    /// A generated parameter id from a string.
+    /// </summary>
     [Serializable]
     public struct AnimatorHash : ISerializationCallbackReceiver, IEquatable<AnimatorHash>
     {
