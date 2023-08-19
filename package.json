@@ -4,6 +4,12 @@
   "displayName": "Unity Extras",
   "description": "A package containing extras for the Unity Game Engine. Full of reusable code to create common game mechanics with.",
   "unity": "2022.2",
+  "hideInEditor": false,
+  "type": "library",
+  "dependencies": {
+    "com.unity.mathematics": "1.2.6",
+    "com.unity.inputsystem": "1.3.0"
+  },
   "keywords": [
     "unity",
     "extra",
@@ -17,11 +23,5 @@
     "name": "CaseyDeCoder",
     "email": "hofland.casey@gmail.com",
     "url": "https://casey-says-hello.surge.sh/"
-  },
-  "hideInEditor": false,
-  "type": "library",
-  "dependencies": {
-    "com.unity.mathematics": "1.2.6",
-    "com.unity.inputsystem": "1.3.0"
   }
 }
