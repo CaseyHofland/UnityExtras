@@ -28,7 +28,7 @@ namespace UnityExtras
 
         public const float terminalVelocity = 53.0f;
 
-        public Vector3 motion { get; set; }
+        private Vector3 motion { get; set; }
         public Vector3 targetMotion { get; set; }
 
         private const float speedOffset = 0.1f;
@@ -47,11 +47,13 @@ namespace UnityExtras
 
         private bool _fastFalling => _currentFastFallBuffer < 0f;
 
-        private float _currentGravityScale => characterIsGrounded || _smoothGravity.normalized == _gravityDirection
+        private float _currentGravityScale => characterIsGrounded || !isJumping
             ? gravityScale
             : _jumpGravityScale * (_fastFalling ? fastFallRatio : 1f);
         private float _currentGravityForce => _currentGravityScale * _gravityForce;
         private Vector3 _gravity => _currentGravityScale * physicsGravity;
+
+        public bool isJumping => _smoothGravity.normalized != _gravityDirection;
 
         #region Dirty
         private Vector3 _lastGravity;
@@ -126,7 +128,6 @@ namespace UnityExtras
 
             CalculateMotion();
             CharacterMove((motion + _smoothGravity) * Time.deltaTime);
-            targetMotion = Vector3.zero;
 
             CalculateGravity();
             UpdateJumpSettings();
@@ -147,6 +148,7 @@ namespace UnityExtras
             }
 
             motion = targetMotion.normalized * targetSpeed;
+            targetMotion = Vector3.zero;
         }
 
         private void CalculateGravity()
@@ -233,7 +235,6 @@ namespace UnityExtras
             _currentCanJumpBuffer = 1f;
             _currentCoyoteTime = 1f;
             Jump(jumpHeight);
-
         }
         #endregion
     }

@@ -1,0 +1,14 @@
+{
+    "name": "CaseyDeCoder.UnityExtras.Playables",
+    "rootNamespace": "UnityExtras.Playables",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

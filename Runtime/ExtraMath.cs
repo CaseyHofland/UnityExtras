@@ -52,5 +52,23 @@ namespace UnityExtras
                 ? Atan2(-quaternion.z, -quaternion.w)
                 : Atan2(quaternion.z, quaternion.w));
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void GetAspectRatio(in ulong width, in ulong height, out ulong unitWidth, out ulong unitHeight)
+        {
+            var divisor = (ulong)System.Numerics.BigInteger.GreatestCommonDivisor(width, height);
+            unitWidth = width / divisor;
+            unitHeight = height / divisor;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float Round(float value, uint decimals)
+        {
+            var multiplier = Pow(10f, decimals);
+            return Mathf.Round(value * multiplier) / multiplier;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long Repeat(long t, long length) => (length + t % length) % length;
     }
 }

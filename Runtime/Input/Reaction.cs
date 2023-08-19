@@ -66,6 +66,7 @@ namespace UnityExtras.InputSystem
             {
                 hideFlags = HideFlags.HideInHierarchy
             };
+            UnityEngine.Object.DontDestroyOnLoad(go);
         }
     }
 }

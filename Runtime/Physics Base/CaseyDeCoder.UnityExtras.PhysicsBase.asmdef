@@ -1,0 +1,19 @@
+{
+    "name": "CaseyDeCoder.UnityExtras.PhysicsBase",
+    "rootNamespace": "UnityExtras",
+    "references": [
+        "GUID:806b0a144ac65a74899d99f880ae9914",
+        "GUID:d8b63aba1907145bea998dd612889d6b",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:3af149b2dee194b1c9b437b46b889853"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

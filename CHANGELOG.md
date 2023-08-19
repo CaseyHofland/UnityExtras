@@ -4,6 +4,40 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2023-08-19
+### Added
+- Add `Menus.RotateAnimationsToMovePerfectlyForwards()` menu in the ModelImporter (animations tab). This will rotate animations on model importers to move perfectly forwards, which may not always be the case with mocap data.
+- Add `ExtraMath.GetAspectRatio()`. This will calculate the smallest possible aspect ratio of a width and height, e.g. 1920 & 1080 returns 16 & 9.
+- Add `ExtraMath.Round()` to round a float to a set number of decimals.
+- Add `ScriptableAnimationEvent`. `AnimationEvent`s have a very rigid architecture, calling methods by name and only allowing for a handful of limited forms of data to be attached to it. `ScriptableAnimationEvents`, while not a perfect system, are a very easy way to use `AnimationEvent`s in a modular fashion. All that is required is to attach a `ScriptableAnimationEventListener` to your `Animator`, to name all your `AnimationEvent` functions `Play`, and to attach a `ScriptableAnimationEvent` as object data. The `ScriptableAnimationEvent` will then play as intended. `ScriptableAnimationEvents` are `ScriptableObject`s, so they can be created as data packets. It's core functionality is that a `ScriptableAnimationEvent` can have children of `ScriptableAnimationEvent`s, meaning you can easily link different events together and mix them for different situations.
+- Add `AnimatorHash`, a value that takes a string in the inspector but returns a hash in code, for optimized lookup of animator properties.
+- Add `ShaderId`, a value that takes a string in the inspector but returns an id in code, for optimized lookup of shader properties.
+- Add `ThirdPersonCharacter` input for the `CharacterMover`.
+- Add `CharacterMover.TurnTowards()` in order to turn the character towards a direction.
+- Add `CharacterSlopeSlider`. This component makes `CharacterController`s slide off of slopes. Normally the `CharacterController` reaching its slope limit stands still. This is a problem when your character can jump and move in the air, as it could simply jump up any slope without issue. This component slides a character down a slope and prevents it from jumping whilst sliding.
+- Add a helpbox for when the min move distance is not 0, and remove the debug log about this.
+- Add a helpbox for when there isn't a Rigidbody attached to the `CharacterMover`, as the `CharacterController` by itself will not fire trigger- and collision events correctly.
+- Add `Menus.SetRecommendedRigidbody()` menu item to the `CharacterController`. `CharacterController`s on their own do not fire collision events correctly (e.g. `OnTriggerExit` never triggers, `OnTriggerEnter` triggers constantly, behavior is inconsistent). This is not what you would expect from a moving object. To fire collision events correctly, it needs a rigidbody attached. Due to `CharacterController`s kinematic nature, there are preferred settings to couple with a `Rigidbody`, and this menu item sets those for you if you mess up.
+- Add `Instance<T>`, a simple way to set static state in Unity via components. The current instance is always the one that was added last. It provides a SetState method that is called on enable. When the component is disabled, the last known instance will be enabled.
+- Add `CursorInstance`. When set state gets called, it will set the state of the static Unity cursor. This can be chained in characters and menus to always set the desired state of the cursor through the use of components.
+- Add `LightControlAsset`, a `PlayableAsset` that can bee used to change the color and intensity of a light.
+- Add `LightControlTrack`, a track that lets you add `LightControlAsset`s to `Timeline`.
+- Add cheap `ExtraMath.Repeat()` method that loops a value between 0 and length.
+
+### Changed
+- Relax `FocusPoint` implementation by storing the list of focus points inside the `FocusPointConstraint` class.
+
+### Removed
+- Removed the `FocusPoints` Scriptable Object.
+
+### Fixed
+- `Direction` was not under the `UnityExtras` namespace.
+- `PropertyMember`s argument exception has been made more verbose.
+- `SerializedPropertyExtension` would fail when trying to target a custom `IList` with custom serialization.
+- `ObjectDrawer` could crash the editor, a check has been added to make sure it won't.
+- `ReactionUpdater` wasn't added to `DontDestroyOnLoad`.
+- Fix `CharacterMover.targetMotion` reseting after `CharacterMover.CharacterMove()`. This was causing an issue where applying targetMotion inside an `OnControllerColliderHit` method would get reset right after.
+
 ## [1.1.1] - 2022-12-24
 ### Added
 - Add IKPlanter, a component that uses the Animation Rigging package to e.g. plant feet on the ground, or hands on objects.
