@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace UnityExtras
 {
+    /// <summary>
+    /// A unique identifier for a shader property name.
+    /// </summary>
     [Serializable]
     public struct ShaderId : ISerializationCallbackReceiver, IEquatable<ShaderId>
     {

@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace UnityExtras
 {
+    /// <summary>
+    /// Specifies a direction relative to a pivot.
+    /// </summary>
     [Serializable]
     public struct RelativeDirection : IEquatable<RelativeDirection>
     {

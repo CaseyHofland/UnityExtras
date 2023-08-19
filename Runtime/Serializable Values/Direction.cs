@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace UnityExtras
 {
+    /// <summary>
+    /// Specifies a direction from a normalized Vector3.
+    /// </summary>
     [Serializable]
     public struct Direction : IEquatable<Direction>
     {
