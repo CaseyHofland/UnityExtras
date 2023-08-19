@@ -67,5 +67,8 @@ namespace UnityExtras
             var multiplier = Pow(10f, decimals);
             return Mathf.Round(value * multiplier) / multiplier;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long Repeat(long t, long length) => (length + t % length) % length;
     }
 }
