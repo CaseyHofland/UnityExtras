@@ -20,8 +20,6 @@ namespace UnityExtras.Events.Editor
         private SerializedProperty _collisionEvent;
         private SerializedProperty _collision2DEvent;
 
-        private SerializedProperty _sendDebugMessage;
-
         private SerializedProperty currentEvent;
 
         private bool showTagFields = false;
@@ -42,8 +40,6 @@ namespace UnityExtras.Events.Editor
             _collider2DEvent = serializedObject.FindAutoProperty(nameof(monoEvent.collider2DEvent));
             _collisionEvent = serializedObject.FindAutoProperty(nameof(monoEvent.collisionEvent));
             _collision2DEvent = serializedObject.FindAutoProperty(nameof(monoEvent.collision2DEvent));
-
-            _sendDebugMessage = serializedObject.FindAutoProperty(nameof(monoEvent.sendDebugMessage));
 
             UpdateVisibility();
         }
@@ -77,7 +73,6 @@ namespace UnityExtras.Events.Editor
 
                 EditorGUILayout.PropertyField(_triggerOnce);
                 EditorGUILayout.PropertyField(currentEvent);
-                EditorGUILayout.PropertyField(_sendDebugMessage);
             }
 
             serializedObject.ApplyModifiedProperties();

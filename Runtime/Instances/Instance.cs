@@ -17,15 +17,15 @@ namespace UnityExtras
         /// <summary>
         /// Return the current instance.
         /// </summary>
-        public static T? current => instances.Count > 0 ? instances[0] : null;
+        public static T? current => instances.Count > 0 ? instances[instances.Count - 1] : null;
 
         protected virtual void OnEnable()
         {
-            instances.Insert(0, (T)this);
+            instances.Add((T)this);
             SetState();
         }
 
-        private void OnDisable()
+        protected virtual void OnDisable()
         {
             var wasCurrent = current == this;
             instances.Remove((T)this);
@@ -36,7 +36,7 @@ namespace UnityExtras
         }
 
         /// <summary>
-        /// Sets the instances' state.
+        /// Sets the instance state.
         /// </summary>
         public abstract void SetState();
     }

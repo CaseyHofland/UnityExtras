@@ -4,6 +4,20 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2023-08-21
+### Added
+- Add `TimeInstance`. When set state gets called, it will set the state of the state `UnityEngine.Time`. This can be chained in characters and menus to always set the desired state of time through the use of components.
+- Add First Person Character sample to quickly download a prototype character to run around with.
+- Add Log methods to `MonoEvent` to replace `send debug message`.
+- Add `PositionSwitch` to replace `LocalPositionSwitch`. `PositionSwitch` can be bound to a `Transform target` allowing for greater flexibility in how the switch is used.
+- Add `InputSwitch`, a switch that toggles by a button press. This makes it very easy to add (de)activation functionality.
+
+### Changed
+- `Switch`es have been improved to work more logically, allowing for more use cases. `Switch.isOn` is public now and takes `Switch.invertSwitch` into account much more appropriately. It does not call `Update` as before, for that you need a `ConditionalSwitch`, which is more faithful to the previous `Switch` implementation.
+
+### Removed
+- `LocalPositionSwitch` in favor of `PositionSwitch`.
+
 ## [1.2.0] - 2023-08-19
 ### Added
 - Add `Menus.RotateAnimationsToMovePerfectlyForwards()` menu in the ModelImporter (animations tab). This will rotate animations on model importers to move perfectly forwards, which may not always be the case with mocap data.
@@ -19,7 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add a helpbox for when there isn't a Rigidbody attached to the `CharacterMover`, as the `CharacterController` by itself will not fire trigger- and collision events correctly.
 - Add `Menus.SetRecommendedRigidbody()` menu item to the `CharacterController`. `CharacterController`s on their own do not fire collision events correctly (e.g. `OnTriggerExit` never triggers, `OnTriggerEnter` triggers constantly, behavior is inconsistent). This is not what you would expect from a moving object. To fire collision events correctly, it needs a rigidbody attached. Due to `CharacterController`s kinematic nature, there are preferred settings to couple with a `Rigidbody`, and this menu item sets those for you if you mess up.
 - Add `Instance<T>`, a simple way to set static state in Unity via components. The current instance is always the one that was added last. It provides a SetState method that is called on enable. When the component is disabled, the last known instance will be enabled.
-- Add `CursorInstance`. When set state gets called, it will set the state of the static Unity cursor. This can be chained in characters and menus to always set the desired state of the cursor through the use of components.
+- Add `CursorInstance`. When set state gets called, it will set the state of the static `UnityEngine.Cursor`. This can be chained in characters and menus to always set the desired state of the cursor through the use of components.
 - Add `LightControlAsset`, a `PlayableAsset` that can bee used to change the color and intensity of a light.
 - Add `LightControlTrack`, a track that lets you add `LightControlAsset`s to `Timeline`.
 - Add cheap `ExtraMath.Repeat()` method that loops a value between 0 and length.
