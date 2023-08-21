@@ -7,56 +7,66 @@ namespace UnityExtras.Events
     /// <summary>Call <see cref="UnityEvent"/> based on a condition.</summary>
     public abstract class Switch : MonoBehaviour
     {
-        [SerializeField][Tooltip("If the condition should reverse its \"is on\" status.\n\nExample: if the condition is true, the Switch is off. If it is false, the Switch is on.")] private bool _reverse = false;
-        /// <summary>If the condition should reverse its "<see cref="isOn">is on</see>" status.</summary>
-        /// <remarks>
-        /// <example>Example: if the condition is <see langword="true"/>, the <see cref="Switch"/> is off. If it is <see langword="false"/>, the <see cref="Switch"/> is on.</example>
-        /// </remarks>
-        public bool reverse
+        public enum StartBehaviour
         {
-            get => _reverse;
+            Nothing,
+            Invoke,
+            InvokeBoth
+        }
+
+        [field: SerializeField, Tooltip("The invoke behaviour of the switch at start.")] public StartBehaviour startBehaviour { get; set; }
+
+        //[field: SerializeField, Tooltip("Use a single toggle switch instead of a separate on/off switch.")] public bool useToggleSwitch { get; set; }
+
+        /// <summary>
+        /// Invoked when the switch is turned on.
+        /// </summary>
+        [field: SerializeField, Tooltip("Called when the switch is turned on.")] public UnityEvent on { get; set; } = new();
+
+        /// <summary>
+        /// Invoked when the switch is turned off.
+        /// </summary>
+        [field: SerializeField, Tooltip("Called when the switch is turned off.")] public UnityEvent off { get; set; } = new();
+        //[field: SerializeField, Tooltip("Called when the switch is toggled.")] public UnityEvent<bool> toggle { get; set; } = new();
+        [SerializeField, Tooltip("Invert the switch, so that it is on by default."), LinkProperty(nameof(invertSwitch))] private bool _invertSwitch = false;
+
+        protected bool _isOn;
+
+        /// <summary>If the switch should invert when it <see cref="isOn">is on</see>.</summary>
+        public bool invertSwitch
+        {
+            get => _invertSwitch;
             set
             {
-                if (_reverse != value)
+                if (_invertSwitch == value)
                 {
-                    _reverse = value;
-                    isOn = !isOn;
+                    return;
                 }
+
+                InvokeSwitch(_isOn ^ (_invertSwitch = value));
             }
         }
 
-        private bool _isOn;
-        /// <summary>If the <see cref="Switch"/> is on or not. Inverting the value will invoke the corresponding <see cref="UnityEvent"/>.</summary>
+        /// <summary>If the switch is on or not.</summary>
         public bool isOn
         {
-            get => _isOn;
-            private set
+            get => _isOn ^ invertSwitch;
+            set
             {
-                if (_isOn != value)
+                if (_isOn == value ^ invertSwitch)
                 {
-                    if (value)
-                    {
-                        on.Invoke();
-                    }
-                    else
-                    {
-                        off.Invoke();
-                    }
+                    return;
                 }
 
-                _isOn = value;
+                InvokeSwitch(_isOn = value ^ invertSwitch);
             }
         }
 
-        [field: SerializeField][field: Tooltip("Called when the switch is turned on.")] public UnityEvent on { get; set; } = new();
-        [field: SerializeField][field: Tooltip("Called when the switch is turned off.")] public UnityEvent off { get; set; } = new();
-
-        protected virtual void OnEnable()
+        protected void InvokeSwitch(bool on)
         {
-            _isOn = reverse ? !Condition() : Condition();
-            if (_isOn)
+            if (on)
             {
-                on.Invoke();
+                this.on.Invoke();
             }
             else
             {
@@ -64,11 +74,26 @@ namespace UnityExtras.Events
             }
         }
 
-        protected virtual void Update()
+        protected virtual void OnEnable()
         {
-            isOn = reverse ? !Condition() : Condition();
+            switch (startBehaviour)
+            {
+                case StartBehaviour.InvokeBoth:
+                    if (isOn)
+                    {
+                        off.Invoke();
+                        on.Invoke();
+                    }
+                    else
+                    {
+                        on.Invoke();
+                        off.Invoke();
+                    }
+                    break;
+                case StartBehaviour.Invoke:
+                    InvokeSwitch(isOn);
+                    break;
+            }
         }
-
-        protected abstract bool Condition();
     }
 }
