@@ -21,8 +21,6 @@ namespace UnityExtras.Events
         [field: SerializeField] public UnityEvent<Collision> collisionEvent { get; private set; } = new UnityEvent<Collision>();
         [field: SerializeField] public UnityEvent<Collision2D> collision2DEvent { get; private set; } = new UnityEvent<Collision2D>();
 
-        [field: SerializeField] public bool sendDebugMessage { get; set; }
-
         public UnityEventBase? currentEvent => eventTrigger switch
         {
             var e when
@@ -254,11 +252,6 @@ namespace UnityExtras.Events
                     break;
             }
 
-            if (sendDebugMessage)
-            {
-                Debug.Log($"{gameEvent} event invoked on {this}.");
-            }
-
             if (triggerOnce && gameEvent != MonoEventTrigger.OnDestroy)
             {
                 Destroy(this);
@@ -283,7 +276,28 @@ namespace UnityExtras.Events
         /// <param name="target">An <see cref="Object"/> not destroyed on <see cref="Scene"/> change.</param>
         public new void DontDestroyOnLoad(Object target)
         {
-            Object.DontDestroyOnLoad( target);
+            Object.DontDestroyOnLoad(target);
+        }
+
+        /// <summary>Logs a message to the Unity Console.</summary>
+        /// <param name="message">String representation for display.</param>
+        public void Log(string message)
+        {
+            Debug.Log(message, this);
+        }
+
+        /// <summary>A variant of <see cref="Log"/> that logs a warning message to the console.</summary>
+        /// <param name="message">String representation for display.</param>
+        public void LogWarning(string message)
+        {
+            Debug.LogWarning(message, this);
+        }
+
+        /// <summary>A variant of <see cref="Log"/> that logs an error message to the console.</summary>
+        /// <param name="message">String representation for display.</param>
+        public void LogError(string message)
+        {
+            Debug.LogError(message, this);
         }
     }
 }
