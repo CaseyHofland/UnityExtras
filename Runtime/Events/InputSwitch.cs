@@ -9,10 +9,8 @@ namespace UnityExtras.Events
     {
         [field: SerializeField] public Input input { get; set; }
 
-        protected override void OnEnable()
+        protected virtual void OnEnable()
         {
-            base.OnEnable();
-
             if (input.action != null)
             {
                 input.action.performed += Performed;
